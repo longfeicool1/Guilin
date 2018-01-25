@@ -274,7 +274,7 @@
             <ul class="bjui-navbar-right">
                 <li>
                     <label id="s" class="control-label x200"
-                           style="padding: 8px; color: #fff;">欢迎您：{{$account.real_name}}</label>
+                           style="padding: 8px; color: #fff;">欢迎您：{{$userinfo['username']}}</label>
                 </li>
                 <li class="datetime">
                     <div><span id="bjui-date"></span> <span id="bjui-clock"></span></div>
@@ -312,16 +312,25 @@
             </ul>
         </nav>
         <div id="bjui-hnav">
-            <button type="button" class="btn-default bjui-hnav-more-left" title="导航菜单左移"><i
-                        class="fa fa-angle-double-left"></i></button>
-            <div id="bjui-hnav-navbar-box">
-                <ul id="bjui-hnav-navbar">
-                    {{$menu}}
-                </ul>
-            </div>
-            <button type="button" class="btn-default bjui-hnav-more-right" title="导航菜单右移"><i
-                        class="fa fa-angle-double-right"></i></button>
-        </div>
+        <!-- <button type="button" class="bjui-hnav-toggle btn-default" data-toggle="collapse" data-target="#bjui-hnav-navbar">
+            <i class="fa fa-bars"></i>
+        </button> -->
+        <ul id="bjui-hnav-navbar">
+            {{foreach $item as $v}}
+            <li><a href="javascript:;" data-toggle="slidebar"><i class="fa fa-{{$v['font']}}"></i> {{$v['rule_title']}}</a>
+                <div class="items hide" data-noinit="true">
+                    <ul id="bjui-hnav-tree{{$v['id']}}" class="ztree ztree_main" data-toggle="ztree" data-on-click="MainMenuClick" data-expand-all="true" data-noinit="true">
+                        {{foreach $v['child'] as $vv}}
+                            {{if $vv['item_type'] != 3}}
+                                <li data-id="{{$vv['id']}}" data-pid="{{$vv['parent_id']}}" data-url="{{$vv['url']}}" data-tabid="{{$vv['action_name']}}">{{$vv['rule_title']}}</li>
+                            {{/if}}
+                        {{/foreach}}
+                    </ul>
+                </div>
+            </li>
+            {{/foreach}}
+        </ul>
+    </div>
     </header>
     <div id="bjui-container">
         <div id="bjui-leftside">
@@ -360,57 +369,7 @@
             </div>
         </div>
     </div>
-    <footer id="bjui-footer">Copyright &copy; 2016</a>
-    </footer>
+    <footer id="bjui-footer">Copyright &copy; 2016</a></footer>
 </div>
 </body>
 </html>
-
-<script type="text/javascript" src="/static/js/phone/mine.js?v=1.4"></script>
-<script>
-    var account = {'real_name':"{{$account['real_name']}}",'exten':"{{$account['exten']}}"};
-    var sendData = "{{$account['real_name']}}";
-</script>
-<!--websoket-->
-<script>
-    // $(document).ready(function () {
-    //     // 连接服务端
-    //     var uid = {{$account['id']}};
-    // //  var socket = io('http://www.admin.com:2120');
-    //     var socket = io('http://112.74.95.105:2111');
-    //     // 连接后登录
-    //     socket.on('connect', function(){
-    //         socket.emit('login', 'admin_' + uid);
-    //     });
-    //     // 后端推送来消息时
-    //     socket.on('new_msg', function(msg){
-    //         var dd = JSON.parse(msg);
-    // //      console.log(dd);return;
-    //         switch(dd.pushGroup){
-    //             case 'NetEnquiry':
-    //                 var html = '<table class="table table-bordered table-hover table-striped table-top" data-toggle="tablefixed" data-width="100%" data-nowrap="true">';
-    //                 html += '<tr><th>时间</th><th>未处理量</th></tr>';
-    //                 $.each(dd.msg, function(k,v) {
-    //                     if(k == 0){
-    //                         html += '<tr><td>新入</td><td>'+v+'</td><tr>';
-    //                     }else{
-    //                         html += '<tr><td>'+k+'</td><td>'+v+'</td><tr>';
-    //                     }
-    //                 });
-    //                 html += '</table>';
-    //                 $(document).alertmsg('ok', html, {
-    //                     displayPosition:'bottomright',
-    //                     displayMode:'slide',
-    //                     title:'消息提示框',
-    // //                  autoClose:true,
-    //                     alertTimeout:8000,
-    //                 });
-    //                 return;
-    //         }
-    //     });
-    // 后端推送来在线数据时
-    //  socket.on('update_online_count', function(online_stat){
-    //      console.log(online_stat);
-    //  });
-    //});
-</script>

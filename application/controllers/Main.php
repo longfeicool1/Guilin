@@ -12,25 +12,7 @@ class Main extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->extenid = in_array(2, $this->_account['group']) && count($this->_account['group']) == 1 ? $this->_account['id'] : '';
-        $this->ci_smarty->assign('account', $this->_account);
-    }
-
-    public function test()
-    {
-        echo 1;exit;
-        // $this->load->library('LogSender');
-        // $sen = new LogSender();
-        // // 10.169.103.99
-
-        // $sen->setHost('120.24.99.41', 514);
-        // echo $sen->send('BLOG_MANAGERTEST_SQL hello world');
-//        log_message('debug', $result);
-
-        // exit;
-        // 
-        // logger('M1', 'hello worldk1');
-        // logger('M1', 'hello worldk2');
+        $this->load->model('manage/Auth_model','auth');
     }
 
     /**
@@ -39,7 +21,9 @@ class Main extends MY_Controller
      */
     public function index()
     {
-        $this->ci_smarty->assign('menu', $this->AuthHelper->createTree($this->_account));
+        $userinfo = $this->session->userdata('account');
+        $this->ci_smarty->assign('item', $this->auth->createMenu($userinfo['menu_id']));
+        $this->ci_smarty->assign('userinfo', $userinfo);
         $this->ci_smarty->display('main/index.tpl');
     }
 
@@ -74,13 +58,13 @@ class Main extends MY_Controller
      */
     public function todayRecord()
     {
-        $exten = $this->extenid ? $this->_account['exten'] : '';
-        $output = <<<EOT
-        <script>
-            getTodayRecord({$exten});
-        </script>
-EOT;
-        echo $output;
+//         $exten = $this->extenid ? $this->_account['exten'] : '';
+//         $output = <<<EOT
+//         <script>
+//             getTodayRecord({$exten});
+//         </script>
+// EOT;
+//         echo $output;
     }
 
     /*

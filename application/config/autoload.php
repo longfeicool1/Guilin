@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |    $autoload['libraries'] = array('user_agent' => 'ua');
  */
-$autoload['libraries'] = array('database', 'session', 'ci_smarty', 'PasswordHash', 'DataExecuter', 'FormHelper', 'DataTable', 'BjuiPager', 'DooValidator', 'Hashids');
+$autoload['libraries'] = array('database', 'session', 'ci_smarty', 'PasswordHash', 'BjuiPager', 'DooValidator', 'Hashids');
 
 /*
 | -------------------------------------------------------------------
@@ -126,8 +126,4 @@ $autoload['language'] = array();
 |
 |    $autoload['model'] = array('first_model' => 'first');
  */
-$autoload['model'] = array(
-    'custom_model' => 'custom',
-    'member_model' => 'member',
-    'news_model'   => 'news',
-);
+$autoload['model'] = array();

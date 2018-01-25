@@ -73,9 +73,9 @@ class AccountHelper
 
         if($success)
         {
-            AccountHelper::$_accountData['login_num'] = AccountHelper::$_accountData['login_num'] + 1;
+            // AccountHelper::$_accountData['login_num'] = AccountHelper::$_accountData['login_num'] + 1;
             $this->_writeLoginData(AccountHelper::$_accountData);
-            $this->_updateMsg($username, AccountHelper::$_accountData['login_num']);
+            // $this->_updateMsg($username, AccountHelper::$_accountData['login_num']);
         }
 
         AccountHelper::$_accountData = '';
@@ -131,31 +131,20 @@ class AccountHelper
      * @param  [type] $username [description]
      * @return [type]           [description]
      */
-    public static function checkPassword($value, $username)
+    public static function checkPassword($password, $username)
     {
         $model = new Account_model;
-        $data = $model->getRow(array('username' => $username),
-            'id, username, password, enable, login_num, real_name, email, mobile,
-            departments, update_password_num, last_update_time, last_login_time, remark, queue, exten,team');
-        $ph = new PasswordHash;
-        if (empty($data))
-        {
+        $info  = $model->userinfo($username);
+        if (empty($info)){
             return '账号或密码不正确';
         }
-
-        $ok = $ph->CheckPassword($value, $data['password']);
-        if (!$ok)
-        {
+        $password = md5($username . md5($username . $password));
+        if ($password != $info['password']){
             return '账号或密码不正确';
         }
-
-        get_instance()->load->model("manage/GroupUser_model", "ManageGroupUser_model");
-        get_instance()->load->model("manage/Auth_model", "ManageAuth_model");
-        $group = get_instance()->ManageGroupUser_model->getList(array('account_id' => $data['id']));
-        $group = DataExecuter::KeyToArray($group, 'group_id');
-        $data['group'] = $group;
-        $data['allow_menu_id'] = (array) (empty($group) ? array() : DataExecuter::KeyToArray(get_instance()->ManageAuth_model->getList('group_id IN ('.join(',', $group).')'), 'menu_id'));
-        AccountHelper::$_accountData = $data;
+        $rules           = $model->getRules($info['role_id']);
+        $info['menu_id'] = $rules;
+        AccountHelper::$_accountData = $info;
     }
 
     /**
