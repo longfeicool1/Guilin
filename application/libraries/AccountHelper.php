@@ -43,8 +43,8 @@ class AccountHelper
     {
         $success = true;
         $errors = array();
-        get_instance()->load->model("manage/Account_model", "ManageAccount_model");
-        $model = new Account_model;
+        get_instance()->load->model("admin/AccountModel", "ManageAccountModel");
+        $model = new AccountModel;
         $rules = array(
             'username'=>array(
                 array('required','账号不能为空'),
@@ -107,7 +107,7 @@ class AccountHelper
      */
     protected function _updateMsg($username, $loginNum)
     {
-        $model = new Account_model;
+        $model = new AccountModel;
         $model->edit(
             array('username'=> $username),
             array('login_num' => $loginNum,
@@ -133,7 +133,7 @@ class AccountHelper
      */
     public static function checkPassword($password, $username)
     {
-        $model = new Account_model;
+        $model = new AccountModel;
         $info  = $model->userinfo($username);
         if (empty($info)){
             return '账号或密码不正确';

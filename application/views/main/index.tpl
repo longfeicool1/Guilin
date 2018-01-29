@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>UBI后台管理</title>
+    <title>鼎然科技</title>
     <meta name="Keywords" content="UBI后台管理"/>
     <meta name="Description" content="UBI后台管理"/>
     <!-- bootstrap - css -->
@@ -127,6 +127,7 @@
     <link href="/static/BJUI/plugins/uploadify/css/uploadify.css" rel="stylesheet">
     <script src="/static/BJUI/plugins/uploadify/scripts/jquery.uploadify.min.js"></script>
     <script src="/static/BJUI/plugins/download/jquery.fileDownload.js"></script>
+    <script src="/static/js/phone/mine.js"></script>
 
 
     <!-- init -->
@@ -236,19 +237,8 @@
         }
 
     </script>
-
-    <style>
-        .btn-defaultedit {
-            color: #333333;
-            border-color: #cccccc
-        }
-
-        .bootstrap-select > .btn{
-            width:100%;
-            padding-left:5px;
-            padding-right:12px;
-        }
-
+    <style type="text/css">
+        .bjui-pageContent{padding: 0px}
     </style>
 </head>
 <body>
@@ -321,9 +311,7 @@
                 <div class="items hide" data-noinit="true">
                     <ul id="bjui-hnav-tree{{$v['id']}}" class="ztree ztree_main" data-toggle="ztree" data-on-click="MainMenuClick" data-expand-all="true" data-noinit="true">
                         {{foreach $v['child'] as $vv}}
-                            {{if $vv['item_type'] != 3}}
-                                <li data-id="{{$vv['id']}}" data-pid="{{$vv['parent_id']}}" data-url="{{$vv['url']}}" data-tabid="{{$vv['action_name']}}">{{$vv['rule_title']}}</li>
-                            {{/if}}
+                            <li data-id="{{$vv['id']}}" data-pid="{{$vv['parent_id']}}" data-url="{{$vv['url']}}" data-tabid="{{$vv['action_name']}}">{{$vv['rule_title']}}</li>
                         {{/foreach}}
                     </ul>
                 </div>

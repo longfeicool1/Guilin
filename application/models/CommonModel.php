@@ -155,7 +155,7 @@ class CommonModel extends MY_Model {
         $back['statusCode']   = $status;
         $back['message']      = $msg;
         $back['tabid']        = $tabid;
-        $back['forward'] = $forward;
+        $back['forward']      = $forward;
         $back['result']       = $selfData;
         header('Content-Type:application/json; charset=utf-8');
         exit(json_encode($back));
