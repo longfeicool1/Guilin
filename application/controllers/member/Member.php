@@ -33,6 +33,17 @@ class Member extends MY_Controller
         $this->ci_smarty->display('member/memberList.tpl');
     }
 
+    public function memberInfo()
+    {
+        $id   = $this->input->get('id');
+        $data = $this->MemberModel->getMemberInfo($id);
+        $this->ci_smarty->assign('data', $data);
+        $this->ci_smarty->assign('payType', $this->MemberModel->getValue('payType'));
+        $this->ci_smarty->assign('customLevel', $this->MemberModel->getValue('customLevel'));
+        $this->ci_smarty->assign('customStatus', $this->MemberModel->getValue('customStatus'));
+        $this->ci_smarty->display('member/memberInfo.tpl');
+    }
+
     public function memberDownload()
     {
         $data = $this->input->get();

@@ -43,8 +43,20 @@ class MemberModel extends MY_Model
     ];
     public $customStatus = [
         1 => '无',
-        2 => '资质不符',
+        2 => '待跟进',
+        3 => '已上门',
+        4 => '资质不符',
+        5 => '已签约',
+        6 => '待签约',
+        7 => '已放款',
+        8 => '已拒绝',
+        9 => '新数据',
     ];
+
+    public function getValue($type)
+    {
+        return !empty($this->$type) ? $this->$type : [];
+    }
 
     public function getMemberList($page,$size,$condition)
     {
@@ -88,5 +100,11 @@ class MemberModel extends MY_Model
         }
         $count = $this->db->count_all_results('md_custom_list');
         return $count;
+    }
+
+    public function getMemberInfo($id)
+    {
+        $result = $this->db->get_where('md_custom_list')->row_array();
+        return $result;
     }
 }

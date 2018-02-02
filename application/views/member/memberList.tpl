@@ -28,7 +28,9 @@
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
             <div class="pull-right">
-                <a class="btn btn-blue" href="javascript:;" onclick="rewardListExport()" target="_blank" data-icon="cloud-download">导出</a>
+            {{if checkAuth(144)}}
+                <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
+            {{/if}}
             </div>
         </div>
     </form>
@@ -57,6 +59,7 @@
                 <th>用户状态</th>
                 <th>数据类型</th>
                 <th>名单星级</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
@@ -85,6 +88,11 @@
                 <td>{{$v['customStatus']}}</td>
                 <td>{{$v['dataLevel']}}</td>
                 <td>{{$v['customLevel']}}</td>
+                <td>
+                    {{if checkAuth(144)}}
+                    <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="980" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
+                    {{/if}}
+                </td>
             </tr>
             {{/foreach}}
             {{else}}
@@ -99,9 +107,9 @@
         $('.frm_reward').submit();
     })
 
-    function rewardListExport(){
+    function memberListExport(){
         var str = $('.frm_reward').serialize();
-        var gourl = '/finance/financeManage/rewardListExport?' + str;
+        var gourl = '/member/member/memberDownload?' + str;
         window.open(gourl);
     }
 </script>
