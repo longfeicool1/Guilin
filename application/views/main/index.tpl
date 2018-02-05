@@ -311,7 +311,7 @@
                 <div class="items hide" data-noinit="true">
                     <ul id="bjui-hnav-tree{{$v['id']}}" class="ztree ztree_main" data-toggle="ztree" data-on-click="MainMenuClick" data-expand-all="true" data-noinit="true">
                         {{foreach $v['child'] as $vv}}
-                            <li data-id="{{$vv['id']}}" data-pid="{{$vv['parent_id']}}" data-url="{{$vv['url']}}" data-tabid="{{$vv['action_name']}}">{{$vv['rule_title']}}</li>
+                            <li data-id="{{$vv['id']}}" data-pid="{{$vv['parent_id']}}" data-url="{{$vv['url']}}" data-faicon="{{if !empty($vv['font'])}}{{$vv['font']}}{{/if}}" data-tabid="{{$vv['action_name']}}">{{$vv['rule_title']}}</li>
                         {{/foreach}}
                     </ul>
                 </div>

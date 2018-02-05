@@ -92,7 +92,7 @@ class UserModel extends MY_Model
 
     public function toDelUser($uid)
     {
-        if ($this->db->delete('md_user',['uid' => $uid])) {
+        if ($this->db->update('md_user',['is_show' => 2],['uid' => $uid])) {
             return ['errcode' => 200,'errmsg' => '删除成功'];
         }
         return ['errcode' => 300,'errmsg' => '删除失败'];

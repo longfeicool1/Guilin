@@ -53,6 +53,18 @@ class MemberModel extends MY_Model
         9 => '新数据',
     ];
 
+    public $callType = [
+        1 => '无',
+        2 => '已接通',
+        3 => '未接',
+        4 => '秒挂',
+        5 => '通话中',
+        6 => '关机',
+        7 => '空号',
+        8 => '拒接',
+        9 => '其他',
+    ];
+
     public function getValue($type)
     {
         return !empty($this->$type) ? $this->$type : [];
@@ -67,9 +79,8 @@ class MemberModel extends MY_Model
         }
         $offset = ($page - 1) * $size;
         $result = $this->db
-            ->select("a.*,IFNULL(b.name,'无') AS firstName,IFNULL(c.name,'无') AS secondName")
+            ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
             ->join('md_user b','a.firstOwer = b.uid','left')
-            ->join('md_user c','a.secondOwer = c.uid','left')
             ->limit($size,$offset)
             ->order_by('meetTime')
             ->get('md_custom_list a')
@@ -98,13 +109,58 @@ class MemberModel extends MY_Model
                 $this->db->where([$k => $v]);
             }
         }
-        $count = $this->db->count_all_results('md_custom_list');
+        $count = $this->db->count_all_results('md_custom_list a');
         return $count;
     }
 
     public function getMemberInfo($id)
     {
-        $result = $this->db->get_where('md_custom_list')->row_array();
+        $result = $this->db
+            ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
+            ->join('md_user b','a.firstOwer = b.uid','left')
+            ->get_where('md_custom_list a',['a.id' => $id])->row_array();
+        $result['meetTime'] = $result['meetTime'] == '0000-00-00 00:00:00' ? '' : $v['meetTime'];
         return $result;
+    }
+
+    public function toUpdateInfo($id,$data)
+    {
+        foreach ($data as $k => $v) {
+            if (empty($v)) {
+                unset($data[$k]);
+            }
+        }
+        if (!empty($data['content'])) {
+            $content = $data['content'];unset($data['content']);
+            $this->db->insert('md_comment',[
+                'uid'     => $this->userinfo['uid'],
+                'cid'     => $id,
+                'content' => $content,
+            ]);
+        }
+        if ($this->db->update('md_custom_list',$data,['id' => $id]) !== false) {
+            return ['errcode' => 200, 'errmsg' => '更新成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '更新失败'];
+    }
+
+    public function getCommentList($cid)
+    {
+        $result = $this->db
+            ->select('a.content,a.created,b.name')
+            ->join('md_user b','a.uid = b.uid','left')
+            ->order_by('a.created desc')
+            ->get_where('md_comment a',['cid' => $cid])
+            ->result_array();
+        return $result;
+    }
+
+    public function toDelMember($ids)
+    {
+        // print_r($ids);die;
+        if ($this->db->where_in('id',explode(',',$ids))->update('md_custom_list',['isShow' => 2])) {
+            return ['errcode' => 200, 'errmsg' => '删除成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '删除失败'];
     }
 }

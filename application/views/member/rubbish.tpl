@@ -1,5 +1,5 @@
 <div class="bjui-pageHeader" style="marign:5px;">
-    <form id="pagerForm" class="frm_reward" data-toggle="ajaxsearch" action="/finance/financeManage/rewardList" method="post">
+    <form id="pagerForm" class="frm_rubbish" data-toggle="ajaxsearch" action="/finance/financeManage/rewardList" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <!-- <input type="hidden" name="orderField" value="${param.orderField}">
@@ -7,10 +7,10 @@
         <div class="bjui-searchBar">
             <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['bt'])}}{{$search['bt']}}{{/if}}" name="bt" autocomplete="off"
-                       placeholder="预约时间开始"/>
+                       placeholder="删除时间开始"/>
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
-                   name="et" autocomplete="off" placeholder="预约时间结束"/>
+                   name="et" autocomplete="off" placeholder="删除时间结束"/>
             <select name="dataLevel" id="dataLevel" data-toggle="selectpicker">
                 <option {{if empty($search['dataLevel'])}}selected{{/if}} value="">--数据类型--</option>
                 <option value="A" {{if $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>
@@ -28,12 +28,12 @@
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
             <div class="pull-right">
-            {{if checkAuth(144)}}
-                <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
-            {{/if}}
-            {{if checkAuth(144)}}
-                <a href="/member/member/delMember" class="btn btn-red" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？"
-                   data-idname="delids" data-group="ids">删除选中</a>
+            <!-- {{if checkAuth(144)}}
+                <a class="btn btn-blue" href="javascript:;" onclick="rubbishListExport()" target="_blank" data-icon="cloud-download">导出</a>
+            {{/if}} -->
+            {{if checkAuth(149)}}
+                <a href="/member/member/back" class="btn btn-blue" data-toggle="doajaxchecked" data-confirm-msg="确定要恢复选中项吗？"
+                   data-idname="delids" data-group="ids">恢复选中</a>
             {{/if}}
             </div>
         </div>
@@ -94,8 +94,8 @@
                     {{if checkAuth(144)}}
                     <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
                     {{/if}}
-                    {{if checkAuth(146)}}
-                    <a href="/member/member/delMember?delids={{$v['id']}}" class="btn btn-red"  data-toggle="doajax" data-confirm-msg="是否删除该记录">删除</a>
+                    {{if checkAuth(149)}}
+                    <a href="/member/member/back?delids={{$v['id']}}" class="btn btn-blue"  data-toggle="doajax" data-confirm-msg="是否恢复该记录?该记录将恢复到初始状态">恢复</a>
                     {{/if}}
                 </td>
             </tr>
@@ -108,12 +108,12 @@
 </div>
 {{include file='../public/page.tpl'}}
 <script>
-    $('.frm_reward select').change(function (){
-        $('.frm_reward').submit();
+    $('.frm_rubbish select').change(function (){
+        $('.frm_rubbish').submit();
     })
 
-    function memberListExport(){
-        var str = $('.frm_reward').serialize();
+    function rubbishListExport(){
+        var str = $('.frm_rubbish').serialize();
         var gourl = '/member/member/memberDownload?' + str;
         window.open(gourl);
     }
