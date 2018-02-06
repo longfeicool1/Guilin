@@ -170,20 +170,30 @@ class CommonModel extends MY_Model {
 
     /**
      * [upload 上传文件获取文件内容]
+     * $boolen  true 开启移动文件
+     * $topath  目标位置
      * @return [type] [description]
      */
-    public function upload()
+    public function upload($boolen = false,$filename = '',$topath = './static/upload_his')
     {
         if (!empty($_FILES)) {
             $tempFile = $_FILES['file']['tmp_name']; //临时文件的存放位置
             // 验证文件类型
             $fileTypes = array('csv','xls','xlsx');
             $fileParts = pathinfo($_FILES['file']['name']);
-            if (in_array(strtolower($fileParts['extension']), $fileTypes)) {
-                log_message('debug', 'tempFile::' . $tempFile);
-                return $tempFile;
+            $part      = strtolower($fileParts['extension']);
+            if (in_array($part, $fileTypes)) {
+                // log_message('debug', 'tempFile::' . $tempFile);
+                if (!$boolen) {
+                    return $tempFile;
+                }
+                $source = rtrim($topath,'/') .'/'. $filename . '.' . $part;
+                if (!move_uploaded_file($tempFile, $source)) {
+                    return ['errcode' => 300,'errmsg' => '上传临时文件目录或者权限错误,请联系管理员。'];
+                }
+                return $source;
             } else {
-                return ['errcode' => 300,'errmsg' => '上传失败'];
+                return ['errcode' => 300,'errmsg' => '上传失败1'];
             }
         }
     }

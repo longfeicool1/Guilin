@@ -82,7 +82,7 @@ class MemberModel extends MY_Model
             ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
             ->join('md_user b','a.firstOwer = b.uid','left')
             ->limit($size,$offset)
-            ->order_by('meetTime')
+            ->order_by('meetTime DESC,a.updated DESC,a.created DESC')
             ->get('md_custom_list a')
             ->result_array();
         $n = 0;
@@ -119,7 +119,7 @@ class MemberModel extends MY_Model
             ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
             ->join('md_user b','a.firstOwer = b.uid','left')
             ->get_where('md_custom_list a',['a.id' => $id])->row_array();
-        $result['meetTime'] = $result['meetTime'] == '0000-00-00 00:00:00' ? '' : $v['meetTime'];
+        $result['meetTime'] = $result['meetTime'] == '0000-00-00 00:00:00' ? '' : $result['meetTime'];
         return $result;
     }
 
@@ -162,5 +162,20 @@ class MemberModel extends MY_Model
             return ['errcode' => 200, 'errmsg' => '删除成功'];
         }
         return ['errcode' => 300, 'errmsg' => '删除失败'];
+    }
+
+    public function toBackData($ids)
+    {
+        $reuslt = $this->db
+            ->where_in('id',explode(',',$ids))
+            ->update('md_custom_list',[
+                'isShow'    => 1,
+                'firstOwer' => 0,
+                'meetTime'  => 0,
+            ]);
+        if ($reuslt) {
+            return ['errcode' => 200, 'errmsg' => '恢复成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '恢复失败'];
     }
 }

@@ -1,5 +1,5 @@
 <div class="bjui-pageHeader" style="marign:5px;">
-    <form id="pagerForm" class="frm_reward" data-toggle="ajaxsearch" action="/finance/financeManage/rewardList" method="post">
+    <form id="pagerForm" class="frm_member" data-toggle="ajaxsearch" action="/member/member/memberList" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <!-- <input type="hidden" name="orderField" value="${param.orderField}">
@@ -13,29 +13,45 @@
                    name="et" autocomplete="off" placeholder="预约时间结束"/>
             <select name="dataLevel" id="dataLevel" data-toggle="selectpicker">
                 <option {{if empty($search['dataLevel'])}}selected{{/if}} value="">--数据类型--</option>
-                <option value="A" {{if $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>
-                <option value="B" {{if $search['dataLevel'] == 'B'}}selected{{/if}}>B级</option>
+                <option value="A" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>
+                <option value="B" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'B'}}selected{{/if}}>B级</option>
             </select>
             <select name="customLevel" id="customLevel" data-toggle="selectpicker">
                 <option {{if empty($search['customLevel'])}}selected{{/if}} value="">--名单星级--</option>
-                <option value="1" {{if $search['customLevel'] == 1}}selected{{/if}}>0星</option>
-                <option value="2" {{if $search['customLevel'] == 2}}selected{{/if}}>1星</option>
-                <option value="3" {{if $search['customLevel'] == 3}}selected{{/if}}>2星</option>
-                <option value="4" {{if $search['customLevel'] == 4}}selected{{/if}}>3星</option>
-                <option value="5" {{if $search['customLevel'] == 5}}selected{{/if}}>4星</option>
+                <option value="1" {{if !empty($search['customLevel']) && $search['customLevel'] == 1}}selected{{/if}}>0星</option>
+                <option value="2" {{if !empty($search['customLevel']) && $search['customLevel'] == 2}}selected{{/if}}>1星</option>
+                <option value="3" {{if !empty($search['customLevel']) && $search['customLevel'] == 3}}selected{{/if}}>2星</option>
+                <option value="4" {{if !empty($search['customLevel']) && $search['customLevel'] == 4}}selected{{/if}}>3星</option>
+                <option value="5" {{if !empty($search['customLevel']) && $search['customLevel'] == 5}}selected{{/if}}>4星</option>
             </select>
             <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、车牌)">
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
-            <div class="pull-right">
-            {{if checkAuth(144)}}
-                <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
-            {{/if}}
-            {{if checkAuth(144)}}
-                <a href="/member/member/delMember" class="btn btn-red" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？"
-                   data-idname="delids" data-group="ids">删除选中</a>
-            {{/if}}
+            <div style="margin-top: 5px">
+                <button type="button" class="btn-blue dq" data-t="1" data-icon="comment"
+                    {{if !empty($search['t']) && $search['t'] == 1}}style="background-color: #428bca;color: #FFF;"{{/if}}>今日预约
+                </button>
+                &nbsp;
+                <button type="button" class="btn-blue dq" data-t="2" data-icon="list"
+                        {{if !empty($search['t']) && $search['t'] == 2}}style="background-color: #428bca;color: #FFF;"{{/if}}>今日分配
+                </button>
+                &nbsp;
+                <button type="button" class="btn-blue dq" data-t="3" data-icon="plus"
+                        {{if !empty($search['t']) && $search['t'] == 3}}style="background-color: #428bca;color: #FFF;"{{/if}}>尚未处理
+                </button>
+                <input type="hidden" name="t" value="{{if !empty($search['t'])}}{{$search['t']}}{{/if}}"/>
+                &nbsp;
+                <div class="pull-right">
+                {{if checkAuth(144)}}
+                    <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
+                {{/if}}
+                {{if checkAuth(146)}}
+                    <a href="/member/member/delMember" class="btn btn-red" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？"
+                       data-idname="delids" data-group="ids">删除选中</a>
+                {{/if}}
+                </div>
             </div>
+
         </div>
     </form>
 </div>
@@ -108,13 +124,24 @@
 </div>
 {{include file='../public/page.tpl'}}
 <script>
-    $('.frm_reward select').change(function (){
-        $('.frm_reward').submit();
+    $('.frm_member select').change(function (){
+        $('.frm_member').submit();
     })
 
     function memberListExport(){
-        var str = $('.frm_reward').serialize();
+        var str = $('.frm_member').serialize();
         var gourl = '/member/member/memberDownload?' + str;
         window.open(gourl);
     }
+
+    $('.dq').click(function () {
+        var t = $(this).attr('data-t');
+        $(this).text('正在加载..');
+        if ($('input[name=t]').val() == t) {
+            $('input[name=t]').val('');
+        } else {
+            $('input[name=t]').val(t);
+        }
+        $('.frm_member').submit();
+    });
 </script>

@@ -34,9 +34,8 @@
     <link rel="stylesheet" type="text/css" href="/static/js/select2/select2.min.css"/>
 
     <!-- vue -->
-    <script src="/static/js/vue.min.js"></script>
-    <script src="/static/js/vue-resource.js"></script>
-
+    <!--<script src="/static/js/vue.min.js"></script>
+    <script src="/static/js/vue-resource.js"></script>-->
     <script src='//cdn.bootcss.com/socket.io/1.3.7/socket.io.js'></script>
 
     <!--[if lte IE 7]>

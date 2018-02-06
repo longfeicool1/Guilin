@@ -10,9 +10,9 @@ class Ci_phpexcel extends PHPExcel
     /*
      * 将excel转换成数组
      */
-    public function getArray($filename)
+    public function getArray($filename,$dateRows = [])
     {
-        $objReader = PHPExcel_IOFactory::createReaderForFile($filename,'xls');
+        $objReader = PHPExcel_IOFactory::createReaderForFile($filename);
         $objReader->setReadDataOnly(true);
         $objPHPExcel = $objReader->load($filename);
         $objWorksheet = $objPHPExcel->getActiveSheet();
@@ -25,16 +25,21 @@ class Ci_phpexcel extends PHPExcel
 
             for ($col = 0; $col < $highestColumnIndex; $col++) {
                 $value = (string)$objWorksheet->getCellByColumnAndRow($col, $row)->getValue();
-
-                if ($row == 1) {
-                    $keys[] = $value;
-                } else {
+                if ($row > 1) {
                     if($value){
-                        $excelData[$row - 1][$keys[$col]] = $value;
+                        $excelData[$row - 1][] = $value;
                     }else{
-                        $excelData[$row - 1][$keys[$col]] = NULL;
+                        $excelData[$row - 1][] = NULL;
                     }
                 }
+            }
+        }
+        foreach($excelData as $k=>$v){
+            if(!empty($v['first_date'])){
+                $excelData[$k]['first_date'] = date('Y-m-d',PHPExcel_Shared_Date::ExcelToPHP($v['first_date']));
+            }
+            if(!empty($v['delivery_time'])){
+                $excelData[$k]['delivery_time'] = date('Y-m-d',PHPExcel_Shared_Date::ExcelToPHP($v['delivery_time']));
             }
         }
         return $excelData;

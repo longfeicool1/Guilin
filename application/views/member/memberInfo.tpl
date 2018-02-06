@@ -5,7 +5,7 @@
     <table class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
         <tr>
             <td colspan="2">
-                <label for="name" class="control-label x90">姓名</label>
+                <label for="name" class="control-label x90">姓名：</label>
                 <input type="text" name="name" id="name" value="{{$data['name']}}" class="form-control">
             </td>
             <td colspan="2">
@@ -66,18 +66,47 @@
                 </select>
             </td>
             <td>
-                <label for="haveHouse" class="control-label x90">是否有房：</label>
+                <label for="haveHouse" class="control-label">是否有房：</label>
                 <select name="haveHouse" id="haveHouse" data-toggle="selectpicker">
                     <option value="1" {{if $data['haveHouse'] == 1}}selected{{/if}}>否</option>
                     <option value="2" {{if $data['haveHouse'] == 2}}selected{{/if}}>是</option>
                 </select>
+                <input type="checkbox" name="hourseDai" data-toggle="icheck" data-label="房贷" {{if $data['hourseDai'] == 2}}checked{{/if}}>
             </td>
             <td>
-                <label for="haveCar" class="control-label x90">是否有车：</label>
+                <label for="haveCar" class="control-label">是否有车：</label>
                 <select name="haveCar" id="haveCar" data-toggle="selectpicker">
                     <option value="1" {{if $data['haveCar'] == 1}}selected{{/if}}>否</option>
                     <option value="2" {{if $data['haveCar'] == 2}}selected{{/if}}>是</option>
                 </select>
+                <input type="checkbox" name="carDai" data-toggle="icheck" data-label="车贷" {{if $data['carDai'] == 2}}checked{{/if}}>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="haveCredit" class="control-label x90">是否有信用卡：</label>
+                <select name="haveCredit" id="haveCredit" data-toggle="selectpicker">
+                    <option value="1" {{if $data['haveCredit'] == 1}}selected{{/if}}>否</option>
+                    <option value="2" {{if $data['haveCredit'] == 2}}selected{{/if}}>是</option>
+                </select>
+            </td>
+            <td colspan="2">
+                <label for="insureCode" class="control-label">保单号：</label>
+                <input type="text" name="insureCode" value="{{$data['insureCode']}}" class="form-control">
+            </td>
+            <td>
+                <label for="weiMoney" class="control-label">微粒贷：</label>
+                <input type="text" name="weiMoney" value="{{$data['weiMoney']}}" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label for="daiMoney" class="control-label x90">贷款额度：</label>
+                <input type="text" name="daiMoney" value="{{$data['daiMoney']}}" class="form-control">
+            </td>
+            <td colspan="2">
+                <label for="daiTime" class="control-label x90">贷款时间：</label>
+                <input type="text" name="daiTime" value="{{$data['daiTime']}}" class="form-control">
             </td>
         </tr>
     </table>
@@ -114,11 +143,8 @@
             <td>
                 <label for="callType" class="control-label x90">通话记录：</label>
                 <select name="callType" id="callType" data-toggle="selectpicker" data-rule="required;">
-                    <option>无</option>
                     {{foreach $callType as $k => $v}}
-                    {{if $k != 1}}
                     <option value="{{$k}}" {{if $data['callType'] == $k}}selected{{/if}}>{{$v}}</option>
-                    {{/if}}
                     {{/foreach}}
                 </select>
             </td>
