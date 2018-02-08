@@ -65,9 +65,22 @@ class MemberModel extends MY_Model
         9 => '其他',
     ];
 
+    public $uids = [];
+
     public function getValue($type)
     {
         return !empty($this->$type) ? $this->$type : [];
+    }
+
+    public function rules()
+    {
+        if ($this->userinfo['role_id'] != 1) { //超级管理员
+            $sql    = "SELECT uid FROM md_user WHERE FIND_IN_SET(?,path)";
+            $result = $this->db->query($sql,[$this->userinfo['uid']])->result_array();
+            $uids   = array_column($result,'uid');
+            $uids[] = $this->userinfo['uid'];
+            return $this->uids = $uids;
+        }
     }
 
     public function getMemberList($page,$size,$condition)
@@ -77,6 +90,13 @@ class MemberModel extends MY_Model
                 $this->db->where([$k => $v]);
             }
         }
+        if(empty($this->uids)){
+            $this->rules();
+        }
+        if(!empty($this->uids)){
+            $this->db->where_in('firstOwer',$this->uids);
+        }
+        // print_r($this->uids);die;
         $offset = ($page - 1) * $size;
         $result = $this->db
             ->select("a.*,IFNULL(b.name,'未分配') AS firstName")

@@ -47,20 +47,16 @@
                     </th>
                     <th  title="职位">
                         <select name="userList[#index#][position]" data-toggle="selectpicker" data-rule="required">
-                            <option value="1">闲杂人</option>
-                            <option value="2">区域总负责人</option>
-                            <option value="3">城市经理</option>
-                            <option value="4">团队长</option>
-                            <option value="5">业务员</option>
+                            {{foreach $position as $k=>$v}}
+                                <option value="{{$k}}">{{$v}}</option>
+                            {{/foreach}}
                         </select>
                     </th>
-                    <th  title="我的团队">
-                        <select name="userList[#index#][team]" data-toggle="selectpicker" data-rule="required">
-                            <option value="1">放养中</option>
-                            <option value="2">猛虎队</option>
-                            <option value="3">精英队</option>
-                            <option value="4">突破队</option>
-                            <option value="5">新人队</option>
+                    <th  title="我的上级">
+                        <select name="userList[#index#][parent_id]" data-toggle="selectpicker" data-rule="required">
+                            {{foreach $userRelation as $v}}
+                                <option value="{{$v['uid']}}">{{if !empty($v['r'])}}{{$v['r']}}{{/if}}{{$v['name']}}</option>
+                            {{/foreach}}
                         </select>
                     </th>
                     <th  title="创建时间"></th>
@@ -79,9 +75,9 @@
                         <td>密码已加密隐藏</td>
                         <td data-val="{{$v['role_id']}}">--</td>
                         <td>{{if !empty($v['name'])}}{{$v['name']}}{{else}}-{{/if}}</td>
-                        <td>{{$v['sex']}}</td>
-                        <td>{{$v['position']}}</td>
-                        <td>{{$v['team']}}</td>
+                        <td data-val="{{$v['sex']}}">--</td>
+                        <td data-val="{{$v['position']}}">--</td>
+                        <td data-val="{{$v['parent_id']}}">--</td>
                         <td>{{$v['regtime']}}</td>
                         <td data-noedit="true">
                             <button type="button" class="btn-green" data-toggle="doedit">编辑</button>

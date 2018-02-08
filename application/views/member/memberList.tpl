@@ -42,6 +42,9 @@
                 <input type="hidden" name="t" value="{{if !empty($search['t'])}}{{$search['t']}}{{/if}}"/>
                 &nbsp;
                 <div class="pull-right">
+                {{if checkAuth(155)}}
+                <a class="btn btn-blue" href="/static/example.xls" onclick="customFileDown(this);return false;" target="_blank" data-icon="cloud-download">下载模板</a>
+                {{/if}}
                 {{if checkAuth(144)}}
                     <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
                 {{/if}}
@@ -108,10 +111,13 @@
                 <td>{{$v['customLevel']}}</td>
                 <td>
                     {{if checkAuth(144)}}
-                    <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
+                        <a href="/member/member/createCheckOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">审件生成</a>
+                    {{/if}}
+                    {{if checkAuth(144)}}
+                        <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
                     {{/if}}
                     {{if checkAuth(146)}}
-                    <a href="/member/member/delMember?delids={{$v['id']}}" class="btn btn-red"  data-toggle="doajax" data-confirm-msg="是否删除该记录">删除</a>
+                        <a href="/member/member/delMember?delids={{$v['id']}}" class="btn btn-red"  data-toggle="doajax" data-confirm-msg="是否删除该记录">删除</a>
                     {{/if}}
                 </td>
             </tr>
@@ -144,4 +150,14 @@
         }
         $('.frm_member').submit();
     });
+
+    function customFileDown()
+    {
+        $.fileDownload($(a).attr('href'), {
+            failCallback: function(responseHtml, url) {
+                if (responseHtml.trim().startsWith('{')) responseHtml = responseHtml.toObj()
+                    $(a).bjuiajax('ajaxDone', responseHtml)
+                }
+            })
+    }
 </script>

@@ -27,8 +27,11 @@ class User extends MY_Controller
         $users     = $this->UserModel->getUserList($page,$size,$condition);
         $count     = $this->UserModel->getUserCount($condition);
         $roles     = $this->UserModel->getRoleList();
-        // print_r($roles);die;
+        $userRelation = $this->UserModel->roleRelation();
+        // echo '<pre>';print_r($userRelation);die;
         $this->ci_smarty->assign('users',$users);
+        $this->ci_smarty->assign('userRelation',$userRelation);
+        $this->ci_smarty->assign('position',$this->UserModel->getValue('position'));
         $this->ci_smarty->assign('roles',$roles);
         $this->ci_smarty->assign('count',$count);
         $this->ci_smarty->assign('search', $data);
@@ -38,6 +41,7 @@ class User extends MY_Controller
     public function addUser()
     {
         $data   = $this->input->post();
+        // print_r($data);die;
         $result = $this->UserModel->toAddUser($data['userList']);
         $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',0);
     }

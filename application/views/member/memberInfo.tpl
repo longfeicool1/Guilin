@@ -220,8 +220,3 @@
         </li>
     </ul>
 </div>
-// <script type="text/javascript">
-//     $('#tipcontent').on('click','p',function (){
-//         $(this).remove();
-//     })
-// </script>

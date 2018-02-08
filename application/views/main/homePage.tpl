@@ -29,3 +29,5 @@
         </div>
     </div> -->
 </div>
+<div class="bjui-pageFooter" style="text-align: center">
+</div>

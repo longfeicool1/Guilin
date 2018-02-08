@@ -18,6 +18,7 @@ class Member extends MY_Controller
         } else {
             $data = $this->session->userdata('memberList');
         }
+        // echo '<pre>';print_r($this->userinfo);die;
         $condition = ['a.isShow' => 1];
         if (!empty($data['t']) && $data['t'] == 1) {
             $condition['meetTime >='] = date('Y-m-d');
