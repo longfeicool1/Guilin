@@ -3,6 +3,14 @@
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <div class="bjui-searchBar">
+            <select name="position" id="position" data-toggle="selectpicker">
+                <option {{if empty($search['position'])}}selected{{/if}} value="">--职位--</option>
+                <option value="1" {{if !empty($search['position']) && $search['position'] == 1}}selected{{/if}}>闲杂人</option>
+                <option value="2" {{if !empty($search['position']) && $search['position'] == 2}}selected{{/if}}>区域总负责人</option>
+                <option value="3" {{if !empty($search['position']) && $search['position'] == 3}}selected{{/if}}>城市经理</option>
+                <option value="4" {{if !empty($search['position']) && $search['position'] == 4}}selected{{/if}}>团队长</option>
+                <option value="5" {{if !empty($search['position']) && $search['position'] == 5}}selected{{/if}}>业务员</option>
+            </select>
             <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(账户名、姓名)">&nbsp;
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>

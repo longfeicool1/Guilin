@@ -48,6 +48,9 @@
                 {{if checkAuth(144)}}
                     <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
                 {{/if}}
+                {{if checkAuth(157)}}
+                <a class="btn btn-blue" id="reallotButton" href="javascript:;" target="_blank" data-icon="paper-plane">重分配选中</a>
+                {{/if}}
                 {{if checkAuth(146)}}
                     <a href="/member/member/delMember" class="btn btn-red" data-toggle="doajaxchecked" data-confirm-msg="确定要删除选中项吗？"
                        data-idname="delids" data-group="ids">删除选中</a>
@@ -58,7 +61,7 @@
         </div>
     </form>
 </div>
-<div class="bjui-pageContent tableContent">
+<div class="bjui-pageContent tableContent" id="customListTable">
     <table class="table table-bordered table-hover table-striped table-top" data-toggle="tablefixed" data-width="100%" data-nowrap="true">
         <thead>
             <tr>
@@ -158,6 +161,29 @@
                 if (responseHtml.trim().startsWith('{')) responseHtml = responseHtml.toObj()
                     $(a).bjuiajax('ajaxDone', responseHtml)
                 }
-            })
+        })
     }
+
+    $('#reallotButton').click(function () {
+        var str = '';
+        $('#customListTable input[type="checkbox"]').each(function (k, v) {
+            if ($(this).is(':checked')) {
+                str += $(this).val() + ',';
+            }
+        });
+        if (!str) {
+            $(document).alertmsg('warn', '请先对数据勾选！')
+            return;
+        }
+        // alert(str);return;
+        $(this).dialog({
+            id: 'reallot',
+            url: '/fun/fun/reallot',
+            title: '数据重分配',
+            width: 350,
+            height: 200,
+            mask: true,
+            data: {'ids': str}
+        });
+    });
 </script>

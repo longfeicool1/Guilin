@@ -25,8 +25,8 @@ class Member extends MY_Controller
             $condition['meetTime <='] = date('Y-m-d',strtotime('+1 day'));
         }
         if (!empty($data['t']) && $data['t'] == 2) {
-            $condition['a.created >='] = date('Y-m-d');
-            $condition['a.created <='] = date('Y-m-d',strtotime('+1 day'));
+            $condition['a.give_time >='] = date('Y-m-d');
+            $condition['a.give_time <='] = date('Y-m-d',strtotime('+1 day'));
         }
         if (!empty($data['t']) && $data['t'] == 3) {
             $condition['callType >'] = 1;

@@ -19,6 +19,9 @@ class User extends MY_Controller
             $data = $this->session->userdata('adminUserList');
         }
         $condition = ['is_show' => 1];
+        if (!empty($data['position'])) {
+            $condition['position'] = $data['position'];
+        }
         if (!empty($data['content'])) {
             $condition['CONCAT(username,name) like'] = "%{$data['content']}%";
         }

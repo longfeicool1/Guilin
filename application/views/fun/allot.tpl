@@ -43,7 +43,7 @@
             </table>
         </fieldset>
         <div style="margin: 0 10px">
-            <button type="submit" id="startAllot" class="btn-primary btn-lg" data-icon="save">开始分配</button>
+            <button type="button" id="startAllot" class="btn-primary btn-lg" data-icon="save">开始分配</button>
         </div>
     </form>
 
@@ -59,5 +59,6 @@
 <script type="text/javascript">
     $('#startAllot').click(function (){
         $(this).text('正在分配...')
+        $('.allotForm').submit();
     })
 </script>

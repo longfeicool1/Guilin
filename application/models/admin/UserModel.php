@@ -47,7 +47,7 @@ class UserModel extends MY_Model
 
     public function getUserList($page,$size,$condition)
     {
-        if($this->userinfo['uid'] != 1){
+        if($this->userinfo['role_id'] != 1){
             $this->db->where(['add_id' => $this->userinfo['uid']]);
         }
         if ($condition) {
@@ -108,8 +108,6 @@ class UserModel extends MY_Model
         $sql = "SELECT * FROM md_user WHERE uid = ?";
         $rs2 = $this->db->query($sql,[$info['parent_id']])->row_array();
         $dd  = [
-            'parent_id' => $info['parent_id'],
-            'path'      => $rs2['path'].','.$info['parent_id'],
             'username'  => $info['username'],
             'role_id'   => $info['role_id'],
             'name'      => $info['name'],
@@ -117,6 +115,10 @@ class UserModel extends MY_Model
             'position'  => $info['position'],
 
         ];
+        if ($info['uid'] != 1) {
+            $dd['parent_id'] = $info['parent_id'];
+            $dd['path']      = $rs2['path'].','.$info['parent_id'];
+        }
         if ($info['password'] != '密码已加密隐藏') {
             $dd['password'] = md5($info['username'] . md5($info['username'] . $info['password']));
         }
