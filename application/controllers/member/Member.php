@@ -20,6 +20,12 @@ class Member extends MY_Controller
         }
         // echo '<pre>';print_r($this->userinfo);die;
         $condition = ['a.isShow' => 1];
+        if (!empty($data['dataLevel'])) {
+            $condition['dataLevel'] = $data['dataLevel'];
+        }
+        if (!empty($data['customLevel'])) {
+            $condition['customLevel'] = $data['customLevel'];
+        }
         if (!empty($data['t']) && $data['t'] == 1) {
             $condition['meetTime >='] = date('Y-m-d');
             $condition['meetTime <='] = date('Y-m-d',strtotime('+1 day'));
@@ -227,6 +233,22 @@ class Member extends MY_Controller
         $this->db->insert_batch('md_custom_list',$insert);
         // print_r($insert);die;
         $this->CommonModel->ajaxReturn(200,'上传成功'.count($insert).'条','dataUpload',false);
+    }
+
+    public function createCheckOrder()
+    {
+        $id = $this->input->get('id');
+        if ($id) {
+            $info = $this->MemberModel->getMemberInfo($id);
+            $this->ci_smarty->assign('data', $info);
+        }
+        $this->ci_smarty->assign('id', $id);
+        $this->ci_smarty->display('member/createCheckOrder.tpl');
+    }
+
+    public function toCreateOrder()
+    {
+        // $this->
     }
 
 }

@@ -114,7 +114,7 @@
                 <td>{{$v['customLevel']}}</td>
                 <td>
                     {{if checkAuth(144)}}
-                        <a href="/member/member/createCheckOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">审件生成</a>
+                        <a href="/member/member/createCheckOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="审件生成">审件生成</a>
                     {{/if}}
                     {{if checkAuth(144)}}
                         <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
