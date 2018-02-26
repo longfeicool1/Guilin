@@ -10,7 +10,7 @@
             </td>
             <td colspan="2">
                 <label for="mobile" class="control-label x90">手机号码：</label>
-                <input type="text" name="mobile" data-rule="required;mobile;" value="{{$data['mobile']}}" class="form-control">
+                <input type="text" name="mobile" data-rule="required;mobile;" value="{{$data['mobile']}}" class="form-control" readonly="">
             </td>
         </tr>
         <tr>
@@ -91,8 +91,11 @@
                 </select>
             </td>
             <td colspan="2">
-                <label for="insureCode" class="control-label">保单号：</label>
-                <input type="text" name="insureCode" value="{{$data['insureCode']}}" class="form-control">
+                <label for="insureCode" class="control-label">是否有寿险保单：</label>
+                <select name="insureCode" id="insureCode" data-toggle="selectpicker">
+                    <option value="1" {{if $data['insureCode'] == 1}}selected{{/if}}>否</option>
+                    <option value="2" {{if $data['insureCode'] == 2}}selected{{/if}}>是</option>
+                </select>
             </td>
             <td>
                 <label for="weiMoney" class="control-label">微粒贷：</label>

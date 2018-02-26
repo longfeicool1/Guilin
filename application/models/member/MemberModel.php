@@ -19,27 +19,32 @@ class MemberModel extends MY_Model
 
     ];
     public $socialSecurity = [
-        1 => '有',
-        2 => '无',
+        1 => '无',
+        2 => '有',
     ];
     public $reservedFunds = [
-        1 => '有',
-        2 => '无',
+        1 => '无',
+        2 => '有',
     ];
     public $haveHouse = [
-        1 => '有',
-        2 => '无',
+        1 => '无',
+        2 => '有',
     ];
     public $haveCar = [
-        1 => '有',
-        2 => '无',
+        1 => '无',
+        2 => '有',
+    ];
+    public $haveInsure = [
+        1 => '无',
+        2 => '有'
     ];
     public $customLevel = [
-        1 => '0星',
-        2 => '1星',
-        3 => '2星',
-        4 => '3星',
-        5 => '4星',
+        1 => '--请选择--',
+        2 => '0星',
+        3 => '1星',
+        4 => '2星',
+        5 => '3星',
+        6 => '4星',
     ];
     public $customStatus = [
         1 => '无',
@@ -63,6 +68,15 @@ class MemberModel extends MY_Model
         7 => '空号',
         8 => '拒接',
         9 => '其他',
+    ];
+
+    public $orderStaus = [
+        1 => '待审核',
+        2 => '在审中',
+        3 => '已拒款',
+        4 => '客户已拒签',
+        5 => '未进件',
+        5 => '已收款',
     ];
 
     public $uids = [];
@@ -115,7 +129,7 @@ class MemberModel extends MY_Model
             $result[$k]['reservedFunds']   = $this->reservedFunds[$v['reservedFunds']];
             $result[$k]['haveHouse']       = $this->haveHouse[$v['haveHouse']];
             $result[$k]['haveCar']         = $this->haveCar[$v['haveCar']];
-            $result[$k]['customLevel']     = $this->customLevel[$v['customLevel']];
+            $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '无' : $this->customLevel[$v['customLevel']];
             $result[$k]['meetTime']        = $v['meetTime'] == '0000-00-00 00:00:00' ? '未预约' : $v['meetTime'];
             $result[$k]['customStatus']    = $this->customStatus[$v['customStatus']];
         }
@@ -128,6 +142,12 @@ class MemberModel extends MY_Model
             foreach ($condition as $k=>$v) {
                 $this->db->where([$k => $v]);
             }
+        }
+        if(empty($this->uids)){
+            $this->rules();
+        }
+        if(!empty($this->uids)){
+            $this->db->where_in('firstOwer',$this->uids);
         }
         $count = $this->db->count_all_results('md_custom_list a');
         return $count;
@@ -197,5 +217,78 @@ class MemberModel extends MY_Model
             return ['errcode' => 200, 'errmsg' => '恢复成功'];
         }
         return ['errcode' => 300, 'errmsg' => '恢复失败'];
+    }
+
+    public function toCreateOrder($data)
+    {
+        if ($this->db->insert('md_check_order',$data)) {
+            return ['errcode' => 200, 'errmsg' => '创建成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '创建失败'];
+    }
+
+    public function getOrderList($page,$size,$condition = [])
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        if(empty($this->uids)){
+            $this->rules();
+        }
+        if(!empty($this->uids)){
+            $this->db->where_in('uid',$this->uids);
+        }
+        $offset = ($page - 1) * $size;
+        $result = $this->db
+            ->select("a.*,b.name as firstName")
+            ->join('md_user b','a.uid = b.uid','left')
+            ->limit($size,$offset)
+            ->order_by('a.created DESC')
+            ->get('md_check_order a')
+            ->result_array();
+        $n = 0;
+        foreach ($result as $k => $v) {
+            $n++;
+            $result[$k]['xuhao']      = $n;
+            $result[$k]['orderStatus'] = $this->orderStaus[$v['status']];
+        }
+        return $result;
+    }
+
+    public function getOrderCount($condition)
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        if(empty($this->uids)){
+            $this->rules();
+        }
+        if(!empty($this->uids)){
+            $this->db->where_in('uid',$this->uids);
+        }
+        $count = $this->db->count_all_results('md_check_order a');
+        return $count;
+    }
+
+    public function getOrderInfo($id)
+    {
+        $result = $this->db
+            ->select("a.*,b.name as firstName")
+            ->join('md_user b','a.uid = b.uid','left')
+            ->get_where('md_check_order a',['a.id' => $id])
+            ->row_array();
+        return $result;
+    }
+
+    public function updateOrder($id,$status)
+    {
+        if ($this->db->update('md_check_order',['status' => $status],['id' => $id])) {
+            return ['errcode' => 200, 'errmsg' => '审核成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '审核失败'];
     }
 }

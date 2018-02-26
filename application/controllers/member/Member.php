@@ -248,7 +248,67 @@ class Member extends MY_Controller
 
     public function toCreateOrder()
     {
-        // $this->
+        $data   = $this->input->post();
+        $result = $this->MemberModel->toCreateOrder($data);
+        if ($result['errcode'] == 200) {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'');
+        } else {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        }
+    }
+
+    public function orderList()
+    {
+        $data = $this->input->post();
+        if ($data) {
+            $this->session->set_userdata('orderList', $data);
+        } else {
+            $data = $this->session->userdata('orderList');
+        }
+        // echo '<pre>';print_r($this->userinfo);die;
+        $condition = [];
+        if (!empty($data['dataLevel'])) {
+            $condition['dataLevel'] = $data['dataLevel'];
+        }
+        if (!empty($data['bt'])) {
+            $condition['created >='] = $data['bt'];
+        }
+        if (!empty($data['et'])) {
+            $condition['created <='] = $data['et'] . ' 23:59:59';
+        }
+        if (!empty($data['content'])) {
+            $condition['CONCAT(a.name,a.mobile) like'] = "%{$data['content']}%";
+        }
+        $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
+        $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
+        $list  = $this->MemberModel->getOrderList($page,$size,$condition);
+        $count = $this->MemberModel->getOrderCount($condition);
+        // D($list);die;
+        $this->ci_smarty->assign('list',$list);
+        $this->ci_smarty->assign('count',$count);
+        $this->ci_smarty->assign('search', $data);
+        $this->ci_smarty->display('member/orderList.tpl');
+    }
+
+    public function orderInfo()
+    {
+        $id   = $this->input->get('id');
+        $info = $this->MemberModel->getOrderInfo($id);
+        // D($info);
+        $this->ci_smarty->assign('data', $info);
+        $this->ci_smarty->display('member/orderInfo.tpl');
+    }
+
+    public function checkOrder()
+    {
+        $id     = $this->input->get('id');
+        $status = $this->input->post('status');
+        $result = $this->MemberModel->updateOrder($id,$status);
+        if ($result['errcode'] == 200) {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'orderList');
+        } else {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        }
     }
 
 }
