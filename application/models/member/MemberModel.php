@@ -76,7 +76,7 @@ class MemberModel extends MY_Model
         3 => '已拒款',
         4 => '客户已拒签',
         5 => '未进件',
-        5 => '已收款',
+        6 => '已收款',
     ];
 
     public $uids = [];

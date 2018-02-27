@@ -58,6 +58,7 @@
                     <option value="3">已拒款</option>
                     <option value="4">客户已拒款</option>
                     <option value="5">未进件</option>
+                    <option value="6">已收款</option>
                 </select>
             </td>
         </tr>
