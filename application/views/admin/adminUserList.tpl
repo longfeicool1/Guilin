@@ -60,6 +60,10 @@
                             {{/foreach}}
                         </select>
                     </th>
+                    <th  title="城市">
+                        <input type="text" name="userList[#index#][city]" data-rule="required" placeholder="未划分城市" value="">
+                    </th>
+
                     <th  title="我的上级">
                         <select name="userList[#index#][parent_id]" data-toggle="selectpicker" data-rule="required">
                             {{foreach $userRelation as $v}}
@@ -85,6 +89,7 @@
                         <td>{{if !empty($v['name'])}}{{$v['name']}}{{else}}-{{/if}}</td>
                         <td data-val="{{$v['sex']}}">--</td>
                         <td data-val="{{$v['position']}}">--</td>
+                        <td data-val="{{$v['city']}}">--</td>
                         <td data-val="{{$v['parent_id']}}">--</td>
                         <td>{{$v['regtime']}}</td>
                         <td data-noedit="true">

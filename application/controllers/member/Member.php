@@ -43,14 +43,22 @@ class Member extends MY_Controller
         if (!empty($data['et'])) {
             $condition['meetTime <='] = $data['et'] . ' 23:59:59';
         }
+        if (!empty($data['spt'])) {
+            $condition['a.created >='] = $data['spt'];
+        }
+        if (!empty($data['ept'])) {
+            $condition['a.created <='] = $data['ept'] . ' 23:59:59';
+        }
         if (!empty($data['content'])) {
-            $condition['CONCAT(a.name,a.mobile) like'] = "%{$data['content']}%";
+            $condition['CONCAT(a.name,a.mobile,a.city,a.source) like'] = "%{$data['content']}%";
         }
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
         $list  = $this->MemberModel->getMemberList($page,$size,$condition);
         $count = $this->MemberModel->getMemberCount($condition);
+        $users = $this->MemberModel->getUser();
         // print_r($list);die;
+        $this->ci_smarty->assign('users',$users);
         $this->ci_smarty->assign('list',$list);
         $this->ci_smarty->assign('count',$count);
         $this->ci_smarty->assign('search', $data);
@@ -207,9 +215,15 @@ class Member extends MY_Controller
         if (empty($result)) {
             $this->CommonModel->ajaxReturn(300,'获取到数据0条');
         }
+        // D($result);
         $payType = array_flip($this->MemberModel->getValue('payType'));
         $insert  = [];
+        $mobile  = [];
         foreach ($result as $v) {
+            if (!empty($v[1]) && in_array($v[1],$mobile)) {
+                continue;
+            }
+            $mobile[] = $v[1];
             $insert[] = [
                 'name'           => $v[0],
                 'mobile'         => $v[1],
@@ -228,9 +242,18 @@ class Member extends MY_Controller
                 'daiTime'        => $v[14],
                 'dataLevel'      => $v[15],
                 'source'         => $v[16],
+                // 'firstOwer'      => '',
             ];
         }
+        //
+        // $result      = $this->db->select('mobile,firstOwer')->where_in('mobile',$mobile)->group_by('mobile')->get_where('md_custom_list',['isShow' => 1])->result_array();
+        // $existMobile = [];
+        // foreach ($result as $v) {
+        //     $existMobile[$v['mobile']] = $v['firstOwer'];
+        // }
+        // D($insert);
         $this->db->insert_batch('md_custom_list',$insert);
+        // $this->db->where_in('mobile',$mobile)->update('md_custom_list',['isRepeat' => 2]);
         // print_r($insert);die;
         $this->CommonModel->ajaxReturn(200,'上传成功'.count($insert).'条','dataUpload',false);
     }
@@ -267,22 +290,24 @@ class Member extends MY_Controller
         }
         // echo '<pre>';print_r($this->userinfo);die;
         $condition = [];
-        if (!empty($data['dataLevel'])) {
-            $condition['dataLevel'] = $data['dataLevel'];
+        if (!empty($data['status'])) {
+            $condition['a.status'] = $data['status'];
         }
         if (!empty($data['bt'])) {
-            $condition['created >='] = $data['bt'];
+            $condition['a.created >='] = $data['bt'];
         }
         if (!empty($data['et'])) {
-            $condition['created <='] = $data['et'] . ' 23:59:59';
+            $condition['a.created <='] = $data['et'] . ' 23:59:59';
         }
         if (!empty($data['content'])) {
-            $condition['CONCAT(a.name,a.mobile) like'] = "%{$data['content']}%";
+            $condition['CONCAT(a.username,a.mobile) like'] = "%{$data['content']}%";
         }
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
         $list  = $this->MemberModel->getOrderList($page,$size,$condition);
         $count = $this->MemberModel->getOrderCount($condition);
+        $users = $this->MemberModel->getUser();
+        $this->ci_smarty->assign('users',$users);
         // D($list);die;
         $this->ci_smarty->assign('list',$list);
         $this->ci_smarty->assign('count',$count);
@@ -294,9 +319,18 @@ class Member extends MY_Controller
     {
         $id   = $this->input->get('id');
         $info = $this->MemberModel->getOrderInfo($id);
-        // D($info);
+        // D($this->userinfo);
         $this->ci_smarty->assign('data', $info);
         $this->ci_smarty->display('member/orderInfo.tpl');
+    }
+
+    public function editOrder()
+    {
+        $id   = $this->input->get('id');
+        $info = $this->MemberModel->getOrderInfo($id);
+        // D($this->userinfo);
+        $this->ci_smarty->assign('data', $info);
+        $this->ci_smarty->display('member/editOrder.tpl');
     }
 
     public function checkOrder()

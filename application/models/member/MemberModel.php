@@ -70,6 +70,11 @@ class MemberModel extends MY_Model
         9 => '其他',
     ];
 
+    public $isBackMoney = [
+        1 => '未退',
+        2 => '已退',
+    ];
+
     public $orderStaus = [
         1 => '待审核',
         2 => '在审中',
@@ -95,6 +100,16 @@ class MemberModel extends MY_Model
             $uids[] = $this->userinfo['uid'];
             return $this->uids = $uids;
         }
+    }
+
+    public function getUser()
+    {
+        $this->rules();
+        if (!empty($this->uids)) {
+            $this->db->where_in('uid',$this->uids);
+        }
+        $result = $this->db->get_where('md_user',['position' => 5])->result_array();
+        return $result;
     }
 
     public function getMemberList($page,$size,$condition)
@@ -129,7 +144,7 @@ class MemberModel extends MY_Model
             $result[$k]['reservedFunds']   = $this->reservedFunds[$v['reservedFunds']];
             $result[$k]['haveHouse']       = $this->haveHouse[$v['haveHouse']];
             $result[$k]['haveCar']         = $this->haveCar[$v['haveCar']];
-            $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '无' : $this->customLevel[$v['customLevel']];
+            $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '新数据' : $this->customLevel[$v['customLevel']];
             $result[$k]['meetTime']        = $v['meetTime'] == '0000-00-00 00:00:00' ? '未预约' : $v['meetTime'];
             $result[$k]['customStatus']    = $this->customStatus[$v['customStatus']];
         }
@@ -253,6 +268,8 @@ class MemberModel extends MY_Model
             $n++;
             $result[$k]['xuhao']      = $n;
             $result[$k]['orderStatus'] = $this->orderStaus[$v['status']];
+            $result[$k]['isBackMoney'] = $this->isBackMoney[$v['isBackMoney']];
+            $result[$k]['sendTime'] = $v['sendTime'] == '0000-00-00 00:00:00' ? '暂无' : $v['sendTime'];
         }
         return $result;
     }
@@ -282,6 +299,14 @@ class MemberModel extends MY_Model
             ->get_where('md_check_order a',['a.id' => $id])
             ->row_array();
         return $result;
+    }
+
+    public function editOrder()
+    {
+        if ($this->db->update('md_check_order',['status' => $status],['id' => $id])) {
+            return ['errcode' => 200, 'errmsg' => '编辑成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '编辑失败'];
     }
 
     public function updateOrder($id,$status)

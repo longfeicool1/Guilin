@@ -31,7 +31,7 @@ class Fun extends MY_Controller
         // D($data);
         $result = $this->FunModel->toAllot($data);
         if ($result['errcode'] == 200) {
-            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'allot',false);
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'allot',false,$result['result']);
         } else {
             $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
         }

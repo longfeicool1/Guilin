@@ -265,6 +265,10 @@
                     <label id="s" class="control-label x200"
                            style="padding: 8px; color: #fff;">欢迎您：{{$userinfo['username']}}</label>
                 </li>
+                <li>
+                    <label id="s" class="control-label x200"
+                           style="padding: 8px; color: #fff;">城市：{{if !empty($userinfo['city'])}}{{$userinfo['city']}}{{else}}未划分城市{{/if}}</label>
+                </li>
                 <li class="datetime">
                     <div><span id="bjui-date"></span> <span id="bjui-clock"></span></div>
                 </li>

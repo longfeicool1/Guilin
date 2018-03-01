@@ -14,10 +14,21 @@ class FunModel extends MY_Model
             'B' => 0,
             'C' => 0,
         ];
-        $sql = "SELECT COUNT(*) AS tot,dataLevel FROM md_custom_list
-            WHERE firstOwer = 0 AND isShow = 1
-            GROUP BY dataLevel";
+        if ($this->userinfo['role_id'] == 1 ) {
+            $sql  = "SELECT COUNT(*) AS tot,dataLevel FROM md_custom_list
+                WHERE firstOwer = 0 AND isShow = 1
+                GROUP BY dataLevel";
+        } else {
+            $city = !empty($this->userinfo['city']) ? str_replace('市','',$this->userinfo['city']) : '';
+            if (!$city) {
+                return $default;
+            }
+            $sql  = "SELECT COUNT(*) AS tot,dataLevel FROM md_custom_list
+                WHERE firstOwer = 0 AND isShow = 1 AND city LIKE '{$city}%'
+                GROUP BY dataLevel";
+        }
         $result = $this->db->query($sql)->result_array();
+        // D($this->db->last_query());
         $mrs = [];
         foreach ($result as $v) {
             $mrs[$v['dataLevel']] = $v['tot'];
@@ -48,6 +59,7 @@ class FunModel extends MY_Model
                 unset($rules[$k]);
             }
         }
+        // D($rules);
         if (empty($rules)) {
             return ['errcode' => 300,'errmsg' => '请选择要分配的业务员'];
         }
@@ -70,31 +82,37 @@ class FunModel extends MY_Model
         //从数据库里取出相应的数据
         $errmsg    = '';
         $allReturn = [];
+        $lastUsers = [];
         $peopleA   = $this->getPeople('A',array_sum($Auser));
         $returnA   = $this->givePeople('A',$Auser,$peopleA);
-        if (!empty($returnA['errmsg'])) {
-            $errmsg .= $returnA['errmsg'];
-        } else {
-            $allReturn = $this->mergeArray($returnA,$allReturn);
-        }
+        $allReturn = $this->mergeArray($returnA[0],$allReturn);
+        $lastUsers = $this->mergeArray($returnA[1],$lastUsers);
+
         $peopleB = $this->getPeople('B',array_sum($Buser));
         $returnB = $this->givePeople('B',$Buser,$peopleB);
-        if (!empty($returnB['errmsg'])) {
-            $errmsg .= $returnB['errmsg'];
-        } else {
-            $allReturn = $this->mergeArray($returnB,$allReturn);
-        }
+        $allReturn = $this->mergeArray($returnB[0],$allReturn);
+        $lastUsers = $this->mergeArray($returnB[1],$lastUsers);
+
         $peopleC = $this->getPeople('C',array_sum($Cuser));
         $returnC = $this->givePeople('C',$Cuser,$peopleC);
-        if (!empty($returnC['errmsg'])) {
-            $errmsg .= $returnC['errmsg'];
-        } else {
-            $allReturn = $this->mergeArray($returnC,$allReturn);
-        }
+        $allReturn = $this->mergeArray($returnC[0],$allReturn);
+        $lastUsers = $this->mergeArray($returnC[1],$lastUsers);
+        // D($lastUsers);
+
         foreach ($allReturn as $uid => $customIds) {
             $this->db->where_in('id',$customIds)->update('md_custom_list',['firstOwer' => $uid,'give_time' => date('Y-m-d H:i:s')]);
         }
-        return ['errcode' => 200,'errmsg'=> '分配成功'];
+        //获取用户姓名
+        $uids = array_keys($lastUsers);
+        $user = $this->db->select('name,uid')->where_in('uid',$uids)->get('md_user')->result_array();
+        $nuser = [];
+        foreach ($user as $v) {
+            $nuser[$v['uid']] = $v['name'];
+        }
+        foreach ($lastUsers as $k => $v) {
+            $lastUsers[$k]['name'] = $nuser[$k];
+        }
+        return ['errcode' => 200,'errmsg'=> '分配成功','result' => $lastUsers,'source' => $rules];
         // D($allReturn);
     }
 
@@ -125,9 +143,9 @@ class FunModel extends MY_Model
      */
     public function givePeople($dataLevel,$users,$people = [])
     {
-        if (empty($people)) {
-            return ['errmsg' => "{$dataLevel}等级用户不足,无法分配"];
-        }
+        // if (empty($people)) {
+        //     return ['errmsg' => "{$dataLevel}等级用户不足,无法分配"];
+        // }
         $result = [];
         $i = 0;
         while (true) {
@@ -150,7 +168,11 @@ class FunModel extends MY_Model
                 }
             }
         }
-        return $result;
+        $lastUsers = [];
+        foreach ($users as $k => $v) {
+            $lastUsers[$k] = [$dataLevel => $v];
+        }
+        return [$result,$lastUsers];
     }
 
     protected function getPeople($dataLevel,$number)
@@ -158,7 +180,16 @@ class FunModel extends MY_Model
         if ($number <= 0) {
             return [];
         }
-        $sql    = "SELECT id FROM md_custom_list WHERE dataLevel = ? AND isShow = 1 AND firstOwer = 0 ORDER BY id ASC LIMIT ?";
+        if ($this->userinfo['role_id'] != 1) {
+            if (!empty($this->userinfo['city'])) {
+                $city = !empty($this->userinfo['city']) ? str_replace('市','',$this->userinfo['city']) : '';
+                $sql  = "SELECT id FROM md_custom_list WHERE dataLevel = ? AND isShow = 1 AND firstOwer = 0 AND city LIKE '{$city}%' ORDER BY id ASC LIMIT ?";
+            } else {
+                return [];
+            }
+        } else {
+            $sql    = "SELECT id FROM md_custom_list WHERE dataLevel = ? AND isShow = 1 AND firstOwer = 0 ORDER BY id ASC LIMIT ?";
+        }
         $result = $this->db->query($sql,[$dataLevel,$number])->result_array();
         return !empty($result) ? array_column($result,'id') : [];
     }

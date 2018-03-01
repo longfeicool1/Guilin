@@ -19,7 +19,7 @@
             </tr>
         </table>
     </fieldset>
-    <form action="/fun/fun/startAllot" method='post' id="pagerForm" class="allotForm" data-toggle="validate">
+    <form action="/fun/fun/startAllot" method='post' id="pagerForm" class="allotForm" data-toggle="ajaxform">
         <fieldset>
             <legend>分配数据</legend>
             <table class="table table-bordered table-hover table-striped table-top tt" data-selected-multi="true">
@@ -58,7 +58,32 @@
 </div>
 <script type="text/javascript">
     $('#startAllot').click(function (){
-        $(this).text('正在分配...')
-        $('.allotForm').submit();
+        // $(this).text('正在分配...')
+        // $('.allotForm').submit();
+        $('.allotForm').bjuiajax('ajaxForm', {
+            "title":"分配结果通知",
+            "confirmMsg":"是否开始分配",
+            "callback":function (res){
+                if (res.statusCode != 200) {
+                    $(document).alertmsg('error',res.message);
+                    return;
+                };
+                var html = '';
+                html    += '<table class="table table-bordered table-hover table-striped table-top">';
+                html    += '<tr><th colspan="4">剩余未分配数</th><tr>';
+                html    += '<tr><th>姓名</th><th>A</th><th>B</th><th>C</th><tr>';
+                $.each(res.result,function (k,v){
+                    html += '<tr>';
+                    html += '<td>'+v.name+'</td>';
+                    html += '<td>'+ (v.A == undefined ? 0 : v.A)+'</td>';
+                    html += '<td>'+ (v.B == undefined ? 0 : v.B)+'</td>';
+                    html += '<td>'+ (v.C == undefined ? 0 : v.C)+'</td>';
+                    html += '</tr>';
+                })
+                html += '</table>';
+                console.log(html);
+                $(document).alertmsg('ok',html,{"autoClose":false});
+            }
+        });
     })
 </script>

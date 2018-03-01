@@ -6,7 +6,8 @@
         <input type="hidden" name="orderDirection" value="${param.orderDirection}"> -->
         <div class="bjui-searchBar">
             <input data-toggle="datepicker" type="text"
-                       value="{{if isset($search['bt'])}}{{$search['bt']}}{{/if}}" name="bt" autocomplete="off"
+                       value="{{if isset($search['bt'])}}{{$search['bt']}}{{/if}}"
+                       name="bt" autocomplete="off"
                        placeholder="预约时间开始"/>
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
@@ -18,15 +19,32 @@
             </select>
             <select name="customLevel" id="customLevel" data-toggle="selectpicker">
                 <option {{if empty($search['customLevel'])}}selected{{/if}} value="">--名单星级--</option>
-                <option value="1" {{if !empty($search['customLevel']) && $search['customLevel'] == 1}}selected{{/if}}>0星</option>
-                <option value="2" {{if !empty($search['customLevel']) && $search['customLevel'] == 2}}selected{{/if}}>1星</option>
-                <option value="3" {{if !empty($search['customLevel']) && $search['customLevel'] == 3}}selected{{/if}}>2星</option>
-                <option value="4" {{if !empty($search['customLevel']) && $search['customLevel'] == 4}}selected{{/if}}>3星</option>
-                <option value="5" {{if !empty($search['customLevel']) && $search['customLevel'] == 5}}selected{{/if}}>4星</option>
+                <option value="1" {{if !empty($search['customLevel']) && $search['customLevel'] == 1}}selected{{/if}}>新数据</option>
+                <option value="2" {{if !empty($search['customLevel']) && $search['customLevel'] == 2}}selected{{/if}}>0星</option>
+                <option value="3" {{if !empty($search['customLevel']) && $search['customLevel'] == 3}}selected{{/if}}>1星</option>
+                <option value="4" {{if !empty($search['customLevel']) && $search['customLevel'] == 4}}selected{{/if}}>2星</option>
+                <option value="5" {{if !empty($search['customLevel']) && $search['customLevel'] == 5}}selected{{/if}}>3星</option>
+                <option value="6" {{if !empty($search['customLevel']) && $search['customLevel'] == 6}}selected{{/if}}>4星</option>
             </select>
-            <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、车牌)">
+            <select name="firstOwer" id="firstOwer" data-toggle="selectpicker">
+                <option {{if empty($search['firstOwer'])}}selected{{/if}} value="">--业务员--</option>
+                {{foreach $users as $v}}
+                <option {{if !empty($search['firstOwer']) && $search['firstOwer'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
+                {{/foreach}}
+            </select>
+            <div style="width: 100%;margin-top: 5px;">
+                <input data-toggle="datepicker" type="text"
+                       value="{{if isset($search['spt'])}}{{$search['spt']}}{{/if}}"
+                       name="spt" autocomplete="off"
+                       placeholder="导入时间开始"/>
+                <input data-toggle="datepicker" type="text"
+                       value="{{if isset($search['ept'])}}{{$search['ept']}}{{/if}}"
+                       name="ept" autocomplete="off" placeholder="导入时间结束"/>
+                <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名、城市、来源)" style="width:300px">
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
+            </div>
+
             <div style="margin-top: 5px">
                 <button type="button" class="btn-blue dq" data-t="1" data-icon="comment"
                     {{if !empty($search['t']) && $search['t'] == 1}}style="background-color: #428bca;color: #FFF;"{{/if}}>今日预约
@@ -83,6 +101,7 @@
                 <th>预约时间</th>
                 <th>用户状态</th>
                 <th>数据类型</th>
+                <th>数据来源</th>
                 <th>名单星级</th>
                 <th>操作</th>
             </tr>
@@ -111,6 +130,7 @@
                 <td>{{$v['meetTime']}}</td>
                 <td>{{$v['customStatus']}}</td>
                 <td>{{$v['dataLevel']}}</td>
+                <td>{{$v['source']}}</td>
                 <td>{{$v['customLevel']}}</td>
                 <td>
                     {{if checkAuth(144)}}

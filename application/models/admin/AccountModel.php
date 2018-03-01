@@ -9,9 +9,9 @@ class AccountModel extends MY_Model
 {
     public function userinfo($username)
     {
-        $sql    = "SELECT uid,password,role_id,add_id,username
+        $sql    = "SELECT *
             FROM md_user
-            WHERE username = ?";
+            WHERE username = ? AND is_show = 1";
         $result = $this->db->query($sql,[$username])->row_array();
         return  $result;
     }

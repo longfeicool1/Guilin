@@ -1,5 +1,5 @@
 <div class="bjui-pageHeader" style="marign:5px;">
-    <form id="pagerForm" class="frm_order" data-toggle="ajaxsearch" action="/member/member/memberList" method="post">
+    <form id="pagerForm" class="frm_order" data-toggle="ajaxsearch" action="/member/member/orderList" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <!-- <input type="hidden" name="orderField" value="${param.orderField}">
@@ -11,12 +11,22 @@
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
                    name="et" autocomplete="off" placeholder="创建时间结束"/>
-            <select name="dataLevel" id="dataLevel" data-toggle="selectpicker">
-                <option {{if empty($search['dataLevel'])}}selected{{/if}} value="">--数据类型--</option>
-                <option value="A" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>
-                <option value="B" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'B'}}selected{{/if}}>B级</option>
+            <select name="status" id="status" data-toggle="selectpicker">
+                <option {{if empty($search['status'])}}selected{{/if}} value="">--审核状态--</option>
+                <option value="1" {{if !empty($search['status']) && $search['status'] == 1}}selected{{/if}}>待审核</option>
+                <option value="2" {{if !empty($search['status']) && $search['status'] == 2}}selected{{/if}}>在审中</option>
+                <option value="3" {{if !empty($search['status']) && $search['status'] == 3}}selected{{/if}}>已拒款</option>
+                <option value="4" {{if !empty($search['status']) && $search['status'] == 4}}selected{{/if}}>客户已拒签</option>
+                <option value="5" {{if !empty($search['status']) && $search['status'] == 5}}selected{{/if}}>未进件</option>
+                <option value="6" {{if !empty($search['status']) && $search['status'] == 6}}selected{{/if}}>已收款</option>
             </select>
-            <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、车牌)">
+            <select name="firstOwer" id="firstOwer" data-toggle="selectpicker">
+                <option {{if empty($search['firstOwer'])}}selected{{/if}} value="">--业务员--</option>
+                {{foreach $users as $v}}
+                <option {{if !empty($search['firstOwer']) && $search['firstOwer'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
+                {{/foreach}}
+            </select>
+            <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名)">
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
             <div style="margin-top: 5px">
@@ -42,7 +52,12 @@
                 <th>定金</th>
                 <th>业务员</th>
                 <th>后勤对接员</th>
-                <th>审核状态</th>
+                {{if !in_array($this->userinfo['position'],[1,5])}}
+                <th>退定金?</th>
+                <th>批款额度</th>
+                <th>创收</th>
+                <th>收款时间</th>
+                {{/if}}
                 <th>创建时间</th>
                 <th>操作</th>
             </tr>
@@ -64,11 +79,18 @@
                 <td>{{$v['deposit']}}</td>
                 <td>{{$v['firstName']}}</td>
                 <td>{{$v['secondUid']}}</td>
+                <td>{{$v['isBackMoney']}}</td>
+                <td>{{$v['sendMoney']}}</td>
+                <td>{{$v['income']}}</td>
+                <td>{{$v['sendTime']}}</td>
                 <td>{{$v['orderStatus']}}</td>
                 <td>{{$v['created']}}</td>
                 <td>
+                    {{if checkAuth(161)}}
+                    <a href="/member/member/editOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="400" data-id="editOrder" data-toggle="dialog" data-title="编辑审件">编辑</a>
+                    {{/if}}
                     {{if checkAuth(160)}}
-                        <a href="/member/member/orderInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="orderInfo" data-toggle="dialog" data-title="审件详情">审核</a>
+                        <a href="/member/member/orderInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="400" data-id="orderInfo" data-toggle="dialog" data-title="审核审件">审核</a>
                     {{/if}}
                 </td>
             </tr>
