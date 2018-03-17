@@ -20,10 +20,10 @@
                 <option value="5" {{if !empty($search['status']) && $search['status'] == 5}}selected{{/if}}>未进件</option>
                 <option value="6" {{if !empty($search['status']) && $search['status'] == 6}}selected{{/if}}>已收款</option>
             </select>
-            <select name="firstOwer" id="firstOwer" data-toggle="selectpicker">
-                <option {{if empty($search['firstOwer'])}}selected{{/if}} value="">--业务员--</option>
+            <select name="uid" id="uid" data-toggle="selectpicker">
+                <option {{if empty($search['uid'])}}selected{{/if}} value="">--业务员--</option>
                 {{foreach $users as $v}}
-                <option {{if !empty($search['firstOwer']) && $search['firstOwer'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
+                <option {{if !empty($search['uid']) && $search['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
                 {{/foreach}}
             </select>
             <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名)">
@@ -52,12 +52,13 @@
                 <th>定金</th>
                 <th>业务员</th>
                 <th>后勤对接员</th>
-                {{if !in_array($this->userinfo['position'],[1,5])}}
                 <th>退定金?</th>
+                {{if checkAuth(164)}}
                 <th>批款额度</th>
                 <th>创收</th>
                 <th>收款时间</th>
                 {{/if}}
+                <th>审核状态</th>
                 <th>创建时间</th>
                 <th>操作</th>
             </tr>
@@ -75,14 +76,17 @@
                 <td>{{$v['channel']}}</td>
                 <td>{{$v['product']}}</td>
                 <td>{{$v['money']}}</td>
-                <td>{{$v['rate']}}</td>
+                <td>{{$v['rate']}}%</td>
                 <td>{{$v['deposit']}}</td>
                 <td>{{$v['firstName']}}</td>
                 <td>{{$v['secondUid']}}</td>
+                {{if !in_array($userinfo['position'],[1,5])|| $userinfo['role_id'] == 1}}{{/if}}
                 <td>{{$v['isBackMoney']}}</td>
+                {{if checkAuth(164)}}
                 <td>{{$v['sendMoney']}}</td>
                 <td>{{$v['income']}}</td>
                 <td>{{$v['sendTime']}}</td>
+                {{/if}}
                 <td>{{$v['orderStatus']}}</td>
                 <td>{{$v['created']}}</td>
                 <td>
@@ -91,6 +95,9 @@
                     {{/if}}
                     {{if checkAuth(160)}}
                         <a href="/member/member/orderInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="400" data-id="orderInfo" data-toggle="dialog" data-title="审核审件">审核</a>
+                    {{/if}}
+                    {{if checkAuth(181)}}
+                        <a href="/member/member/delOrder?delids={{$v['id']}}" class="btn btn-red"  data-toggle="doajax" data-confirm-msg="是否删除该记录">删除</a>
                     {{/if}}
                 </td>
             </tr>

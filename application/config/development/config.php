@@ -24,7 +24,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |
  */
 
-$config['base_url'] = 'http://' . $_SERVER['HTTP_HOST'];
+$config['base_url'] = 'http://www.guilinadmin.com/';
+// $config['base_url'] = 'http://' . $_SERVER['HTTP_HOST'];
 /*
 |--------------------------------------------------------------------------
 | Index File

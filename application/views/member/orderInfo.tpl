@@ -35,7 +35,7 @@
             </td>
             <td>
                 <label for="rate" class="control-label x90">费率：</label>
-                <span>{{$data['rate']}}</span>
+                <span>{{$data['rate']}}%</span>
             </td>
         </tr>
         <tr>
@@ -49,6 +49,7 @@
                 {{if checkAuth(162)}}
                 <input type="radio" value="1" name="isBackMoney" data-toggle="icheck" data-label="未退款" {{if $data['isBackMoney'] == 1}}checked{{/if}}>
                 <input type="radio" value="2" name="isBackMoney" data-toggle="icheck" data-label="已退款" {{if $data['isBackMoney'] == 2}}checked{{/if}}>
+                <input type="radio" value="3" name="isBackMoney" data-toggle="icheck" data-label="转创收" {{if $data['isBackMoney'] == 3}}checked{{/if}}>
                 {{/if}}
             </td>
             <td>
@@ -69,7 +70,7 @@
                     <option {{if $data['status'] == 3}}selected{{/if}} value="3">已拒款</option>
                     <option {{if $data['status'] == 4}}selected{{/if}} value="4">客户已拒款</option>
                     <option {{if $data['status'] == 5}}selected{{/if}} value="5">未进件</option>
-                    {{if !in_array($this->userinfo['position'],[1,5])}}
+                    {{if checkAuth(164)}}
                     <option {{if $data['status'] == 6}}selected{{/if}} value="6">已收款</option>
                     {{/if}}
                 </select>

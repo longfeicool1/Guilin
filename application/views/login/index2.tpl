@@ -27,7 +27,7 @@ a:link {color: #285e8e;}
 .main_box .setting a {color: #FF6600;}
 .main_box .setting a:hover {color: #555;}
 .login_logo {margin-bottom: 20px; height: 45px; text-align: center;}
-.login_logo img {width: 150px;}
+.login_logo img {height: 45px;}
 .login_msg {text-align: center; font-size: 16px;}
 .login_form {padding-top: 20px; font-size: 16px;}
 .login_box .form-control {display: inline-block; *display: inline; zoom: 1; width: auto; font-size: 18px;}
@@ -67,7 +67,7 @@ $(function() {
     //changeCode();
     if ($.cookie(COOKIE_NAME)){
         $("#j_username").val($.cookie(COOKIE_NAME));
-        $("#j_captcha").focus();
+        $("#j_password").focus();
         $("#j_remember").attr('checked', true);
     } else {
         $("#j_username").focus();
@@ -101,18 +101,16 @@ $(function() {
             $.cookie(COOKIE_NAME, null, { path: '/' });  //删除cookie
         }
         $("#login_ok").attr("disabled", true).val('登陆中..');
-        // var password = $("#j_password").val();
+        var password = $("#j_password").val();
         //$("#j_password").val(HMAC_SHA256_MAC($("#j_randomKey").val(), password));
         //window.location.href = 'index.html'; /*注意：生产环境时请删除此行*/
 
-        $.ajax({url: "/login", type: 'POST', dataType: 'json', data: {
-                'username': $("#j_username").val(),
-                'phoneCaptcha': $("#j_phoneCaptcha").val(),
-                // 'captcha': $("#j_captcha").val(),
-                'csrf': $("#t_token").val()
-            },
+        $.ajax({url: "/login?type=1", type: 'POST', dataType: 'json', data: {'username': $("#j_username").val(),
+            'password': password,
+            'captcha': $("#j_captcha").val(),
+            'csrf': $("#t_token").val()},
             success: function(data){
-                console.log(data);
+                // return;
                 if (data.statusCode == 200)
                 {
                     window.location.href = "/";
@@ -121,7 +119,7 @@ $(function() {
                 {
 
                     $("#login_ok").attr("disabled", false).val('登陆');
-                    $("#j_phoneCptcha").val('');
+                    $("#j_password").val('');
                     $("#j_captcha").val('');
                     $("#captcha_img").click();
                     alert(data.message);
@@ -149,25 +147,6 @@ function choose_bg() {
     var bg = Math.floor(Math.random() * 9 + 1);
     $('body').css('background-image', 'url(/static/images/loginbg_0'+ bg +'.jpg)');
 }
-
-function sendPhoneCode()
-{
-    var imgCaptcha = $('#j_captcha').val()
-    var mobile     = $('#j_username').val()
-    if (!mobile) {
-        alert('用户名不能为空')
-        return
-    };
-    if (!imgCaptcha) {
-        alert('手机码不能为空')
-        return
-    };
-    $.get('/login/phoneCode',{mobile:mobile,imgCaptcha:imgCaptcha},function (res){
-        console.log(res);
-        res = $.parseJSON(res);
-        alert(res.message);
-    })
-}
 </script>
 </head>
 <body>
@@ -184,7 +163,7 @@ function sendPhoneCode()
     <div class="setting"><a href="javascript:;" onclick="choose_bg();" title="更换背景"><span class="glyphicon glyphicon-th-large"></span></a></div>
     <div class="login_box">
         <div class="login_logo">
-            <img src="/static/images/logo1.png" >
+            <img src="/static/images/logo1.png" style="width:150px;height:auto">
         </div>
         <!--
         <c:if test="${!empty message}">
@@ -200,21 +179,19 @@ function sendPhoneCode()
                 <?php //echo csrf_hidden();
                 ?>
                 <div class="form-group">
-                    <label for="j_username" class="t">用户名：</label> <input id="j_username" value="" name="username" type="text" class="form-control x319 in" autocomplete="on">
+                    <label for="j_username" class="t">用户名：</label> <input id="j_username" value="" name="username" type="text" class="form-control x319 in" autocomplete="off">
                 </div>
-                <!-- <div class="form-group">
+                <div class="form-group">
                     <label for="j_password" class="t">密　码：</label> <input id="j_password" value="" name="passwordhash" type="password" class="form-control x319 in">
-                </div> -->
+                </div>
                 <div class="form-group">
                     <label for="j_captcha" class="t">验证码：</label> <input id="j_captcha" name="j_captcha" type="text" class="form-control x164 in">
                     <img id="captcha_img" alt="点击更换" title="点击更换" onclick="javascript: this.src='/login/captcha?q=' + Math.random();" src="/login/captcha" class="m">
                 </div>
-                <div class="form-group">
-                    <label for="send_code" class="t">手机验证码</label>
-                    <input id="j_phoneCaptcha" value="" name="j_phoneCaptcha" type="text" class="form-control x164 in">
-                    <input type="button" id="send_code" onclick="sendPhoneCode()" value="发送手机验证码" class="btn btn-orange" style="margin-bottom: 6px">
+                <!-- <div class="form-group">
+                    <label for="j_password" class="t">密　码：</label> <input id="j_password" value="" name="passwordhash" type="password" class="form-control x319 in">
                 </div>
-                <div class="form-group">
+ -->                <div class="form-group">
                     <label class="t"></label>
                     <label for="j_remember" class="m"><input id="j_remember" type="checkbox" value="true">&nbsp;记住登陆账号!</label>
                 </div>

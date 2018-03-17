@@ -1,6 +1,6 @@
 <div class="bjui-pageContent">
 <form action="/member/member/toCreateOrder" method='post' id="pagerForm" data-toggle="validate">
-<input type="hidden" name="id" value="{{$id}}">
+<input type="hidden" name="customId" value="{{$id}}">
 <fieldset>
     <legend>基本信息</legend>
     <table class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
@@ -31,7 +31,8 @@
             </td>
             <td>
                 <label for="rate" class="control-label x90">费率：</label>
-                <input type="text" name="rate" data-rule="required;" value="" class="form-control">
+                <input type="text" name="rate" data-rule="required;" value="1" class="form-control">
+                <span>%</span>
             </td>
         </tr>
         <tr>

@@ -9,8 +9,8 @@ class UserModel extends MY_Model
 {
     public $position = [
         1 => '闲杂人',
-        2 => '区域总负责人',
-        3 => '城市经理',
+        2 => '城市负责人',
+        3 => '区部负责人',
         4 => '团队长',
         5 => '业务员',
     ];
@@ -108,11 +108,12 @@ class UserModel extends MY_Model
         $sql = "SELECT * FROM md_user WHERE uid = ?";
         $rs2 = $this->db->query($sql,[$info['parent_id']])->row_array();
         $dd  = [
-            'username'  => $info['username'],
-            'role_id'   => $info['role_id'],
-            'name'      => $info['name'],
-            'sex'       => $info['sex'],
-            'position'  => $info['position'],
+            'username' => $info['username'],
+            'role_id'  => $info['role_id'],
+            'name'     => $info['name'],
+            'sex'      => $info['sex'],
+            'position' => $info['position'],
+            'city'     => $info['city'],
 
         ];
         if ($info['uid'] != 1) {
@@ -122,7 +123,6 @@ class UserModel extends MY_Model
         if ($info['password'] != '密码已加密隐藏') {
             $dd['password'] = md5($info['username'] . md5($info['username'] . $info['password']));
         }
-        // print_r($dd);die;
         if (!empty($info['act'])) {
             if (!empty($rs1)) {
                 return ['errcode' => 300,'errmsg' => $info['username'].'用户名已存在'];

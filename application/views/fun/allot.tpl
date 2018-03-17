@@ -1,5 +1,6 @@
 <style type="text/css">
     .tt th,.tt td{font-size: 16px;text-align: center;}
+    .mytitle {color: red;font-weight: 600}
 </style>
 <div class="bjui-pageContent" id="fenpei">
     <fieldset>
@@ -29,16 +30,13 @@
                     <th>B类数据</th>
                     <th>C类数据</th>
                 </tr>
-                {{foreach $man as $parentName => $team}}
-                <tr><td colspan="4">团队长：{{$parentName}}</td></tr>
-                    {{foreach $team as $v}}
+                {{foreach $man as $v}}
                     <tr>
-                        <td>{{$v['name']}}</td>
+                        <td style="text-align: left"><span class="mytitle">{{if !empty($v['positionName'])}}{{$v['positionName']}}{{else}}&nbsp;&nbsp;&nbsp;{{/if}}</span>{{$v['name']}}</td>
                         <td><input type="number" name="list[{{$v['uid']}}][A]" value="0" class="form-control" min="0"></td>
                         <td><input type="number" name="list[{{$v['uid']}}][B]" value="0" class="form-control"></td>
                         <td><input type="number" name="list[{{$v['uid']}}][C]" value="0" class="form-control"></td>
                     </tr>
-                    {{/foreach}}
                 {{/foreach}}
             </table>
         </fieldset>
@@ -64,8 +62,12 @@
             "title":"分配结果通知",
             "confirmMsg":"是否开始分配",
             "callback":function (res){
-                if (res.statusCode != 200) {
+                if (res.statusCode == 300) {
                     $(document).alertmsg('error',res.message);
+                    return;
+                };
+                if (res.statusCode == 201) {
+                    $(document).alertmsg('ok',res.message);
                     return;
                 };
                 var html = '';

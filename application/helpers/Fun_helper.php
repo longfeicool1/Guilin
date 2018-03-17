@@ -19,3 +19,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             return false;
         }
     }
+
+    /**
+     * [sms 发送短信]
+     * @param  [type] $mobile [手机]
+     * @param  [type] $txt   [内容]
+     * @return [type]         [description]
+     */
+    function sms($mobile,$code)
+    {
+        $cpid  = 'kvtz69';
+        $cppwd = '0KzhAfKo';
+        $txt = urlencode("您的验证码为{$code}");
+        // http接口，支持 https 访问，如有安全方面需求，可以访问 https开头
+        $api = "http://api2.santo.cc/submit?command=MT_REQUEST&cpid={$cpid}&cppwd={$cppwd}&da=86{$mobile}&sm={$txt}";
+        // 建议记录 $resp 到日志文件，$resp里有详细的出错信息
+        $request = Requests::get($api);
+        if ($request->status_code == 200) {
+            $resp = json_decode($request->body);
+            preg_match('/mtmsgid=(.*?)&/', $resp, $re);
+            if (!empty($re) && count($re) >= 2)
+                return $re[1];
+        } else {
+            log_message('error', '发送短信短信[' . $code . ']至[' . $mobile . ']失败,服务器返回错误码[' . $request->status_code . ']');
+        }
+        return false;
+    }

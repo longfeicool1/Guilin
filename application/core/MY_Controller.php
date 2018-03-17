@@ -12,6 +12,7 @@ class MY_Controller extends CI_Controller
         'login',
         'login/captcha',
         'login/loginOut',
+        'login/phoneCode',
     );
 
     /**
@@ -29,6 +30,7 @@ class MY_Controller extends CI_Controller
             }
         }
         $this->userinfo = $this->session->userdata('account');
+        $this->ci_smarty->assign('userinfo',$this->session->userdata('account'));
     }
 
     /**

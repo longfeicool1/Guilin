@@ -20,8 +20,124 @@ class Member extends MY_Controller
         }
         // echo '<pre>';print_r($this->userinfo);die;
         $condition = ['a.isShow' => 1];
+        $whereOr   = [];
         if (!empty($data['dataLevel'])) {
             $condition['dataLevel'] = $data['dataLevel'];
+        }
+        if (!empty($data['firstOwer'])) {
+            $condition['firstOwer'] = $data['firstOwer'];
+        }
+        if (!empty($data['source'])) {
+            $condition['source'] = $data['source'];
+        }
+        if (!empty($data['customLevel'])) {
+            $condition['customLevel'] = $data['customLevel'];
+        }
+        if (!empty($data['t']) && $data['t'] == 1) {
+            $condition['meetTime >='] = date('Y-m-d');
+            $condition['meetTime <='] = date('Y-m-d',strtotime('+1 day'));
+        }
+        if (!empty($data['t']) && $data['t'] == 2) {
+            $condition['a.give_time >='] = date('Y-m-d');
+            $condition['a.give_time <='] = date('Y-m-d',strtotime('+1 day'));
+        }
+        if (!empty($data['t']) && $data['t'] == 3) {
+            $whereOr['callType'] = 1;
+            // $condition['meetTime'] = '0000-00-00 00:00:00';
+            $whereOr['isAllot'] = 2;
+            // $condition['id >'] = '0 AND (callType = 1 OR isAllot = 2)';
+        }
+        if (!empty($data['bt'])) {
+            $condition['meetTime >='] = $data['bt'];
+        }
+        if (!empty($data['et'])) {
+            $condition['meetTime <='] = $data['et'] . ' 23:59:59';
+        }
+        if (!empty($data['spt'])) {
+            $condition['a.created >='] = $data['spt'];
+        }
+        if (!empty($data['ept'])) {
+            $condition['a.created <='] = $data['ept'] . ' 23:59:59';
+        }
+        if (!empty($data['sct'])) {
+            $condition['a.updated >='] = $data['sct'];
+        }
+        if (!empty($data['ect'])) {
+            $condition['a.updated <='] = $data['ect'] . ' 23:59:59';
+        }
+        if (!empty($data['content'])) {
+            $condition['CONCAT(a.name,a.mobile,a.city,a.source) like'] = "%{$data['content']}%";
+        }
+        $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
+        $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
+        $list  = $this->MemberModel->getMemberList($page,$size,$condition,$whereOr);
+        $count = $this->MemberModel->getMemberCount($condition,$whereOr);
+        $users = $this->MemberModel->getUser();
+        // print_r($list);die;
+        $this->ci_smarty->assign('source',$this->MemberModel->getSource());
+        $this->ci_smarty->assign('users',$users);
+        $this->ci_smarty->assign('list',$list);
+        $this->ci_smarty->assign('count',$count);
+        $this->ci_smarty->assign('search', $data);
+        $this->ci_smarty->display('member/memberList.tpl');
+    }
+
+    public function memberInfo()
+    {
+        $id      = $this->input->get('id');
+        $data    = $this->MemberModel->getMemberInfo($id);
+        $comment = $this->MemberModel->getCommentList($id);
+        $this->ci_smarty->assign('data', $data);
+        $this->ci_smarty->assign('comment', $comment);
+        $this->ci_smarty->assign('payType', $this->MemberModel->getValue('payType'));
+        $this->ci_smarty->assign('customLevel', $this->MemberModel->getValue('customLevel'));
+        $this->ci_smarty->assign('customStatus', $this->MemberModel->getValue('customStatus'));
+        $this->ci_smarty->assign('callType', $this->MemberModel->getValue('callType'));
+        $this->ci_smarty->display('member/memberInfo.tpl');
+    }
+
+    public function updateInfo()
+    {
+        $id     = $this->input->get('id');
+        $data   = $this->input->post();
+        if ($data['callType'] == 1) {
+            $this->CommonModel->ajaxReturn(300,'请选择通话记录！','',false);
+        }
+        if ($data['customStatus'] == 1) {
+            $this->CommonModel->ajaxReturn(300,'请选择名单状态！','',false);
+        }
+        if ($data['customLevel'] == 1) {
+            $this->CommonModel->ajaxReturn(300,'请选择名单等级！','',false);
+        }
+        $result = $this->MemberModel->toUpdateInfo($id,$data);
+        if ($result['errcode'] == 200) {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'memberList');
+        } else {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        }
+    }
+
+    public function delMember()
+    {
+        $ids    = $this->input->post_get('delids');
+        $result = $this->MemberModel->toDelMember($ids);
+        if ($result['errcode'] == 200) {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'memberList',false);
+        } else {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        }
+    }
+
+    public function memberDownload()
+    {
+        $data      = $this->input->get();
+        $condition = ['a.isShow' => 1];
+        $whereIn   = [];
+        if (!empty($data['dataLevel'])) {
+            $condition['dataLevel'] = $data['dataLevel'];
+        }
+        if (!empty($data['firstOwer'])) {
+            $condition['firstOwer'] = $data['firstOwer'];
         }
         if (!empty($data['customLevel'])) {
             $condition['customLevel'] = $data['customLevel'];
@@ -52,67 +168,20 @@ class Member extends MY_Controller
         if (!empty($data['content'])) {
             $condition['CONCAT(a.name,a.mobile,a.city,a.source) like'] = "%{$data['content']}%";
         }
-        $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
-        $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
-        $list  = $this->MemberModel->getMemberList($page,$size,$condition);
-        $count = $this->MemberModel->getMemberCount($condition);
-        $users = $this->MemberModel->getUser();
-        // print_r($list);die;
-        $this->ci_smarty->assign('users',$users);
-        $this->ci_smarty->assign('list',$list);
-        $this->ci_smarty->assign('count',$count);
-        $this->ci_smarty->assign('search', $data);
-        $this->ci_smarty->display('member/memberList.tpl');
-    }
-
-    public function memberInfo()
-    {
-        $id      = $this->input->get('id');
-        $data    = $this->MemberModel->getMemberInfo($id);
-        $comment = $this->MemberModel->getCommentList($id);
-        $this->ci_smarty->assign('data', $data);
-        $this->ci_smarty->assign('comment', $comment);
-        $this->ci_smarty->assign('payType', $this->MemberModel->getValue('payType'));
-        $this->ci_smarty->assign('customLevel', $this->MemberModel->getValue('customLevel'));
-        $this->ci_smarty->assign('customStatus', $this->MemberModel->getValue('customStatus'));
-        $this->ci_smarty->assign('callType', $this->MemberModel->getValue('callType'));
-        $this->ci_smarty->display('member/memberInfo.tpl');
-    }
-
-    public function updateInfo()
-    {
-        $id     = $this->input->get('id');
-        $data   = $this->input->post();
-        if ($data['callType'] == 1) {
-            $this->CommonModel->ajaxReturn(300,'请选择通话记录的状态！','',false);
+        if (!empty($data['sct'])) {
+            $condition['a.updated >='] = $data['sct'];
         }
-        $result = $this->MemberModel->toUpdateInfo($id,$data);
-        if ($result['errcode'] == 200) {
-            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'memberList');
-        } else {
-            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        if (!empty($data['ect'])) {
+            $condition['a.updated <='] = $data['ect'] . ' 23:59:59';
         }
-    }
-
-    public function delMember()
-    {
-        $ids    = $this->input->post_get('delids');
-        $result = $this->MemberModel->toDelMember($ids);
-        if ($result['errcode'] == 200) {
-            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'memberList',false);
-        } else {
-            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        if (!empty($data['ids'])) {
+            $whereIn = ['a.id' => explode(',',trim($data['ids'],','))];
         }
-    }
-
-    public function memberDownload()
-    {
-        $data = $this->input->get();
-        $condition = [];
-        if (!empty($data['content'])) {
-            $condition['CONCAT(a.name,a.mobile) like'] = "%{$data['content']}%";
+        $list = $this->MemberModel->getMemberList(1,1999,$condition,$whereIn);
+        // D($list);
+        if (empty($list)) {
+            echo '未查到符合条件的数据';return;
         }
-        $list      = $this->MemberModel->getMemberList(1,1999,$condition);
         $header = array(
             'name'           => '姓名',
             'sex'            => '性别',
@@ -134,7 +203,7 @@ class Member extends MY_Controller
         );
         // echo '<pre>';print_r($data);die;
         $filename = date('Y-m-d').'客户下载列表.xls';
-        $this->commonModel->export($header, $list, $filename);
+        $this->CommonModel->export($header, $list, $filename);
     }
 
     public function rubbish()
@@ -242,15 +311,20 @@ class Member extends MY_Controller
                 'daiTime'        => $v[14],
                 'dataLevel'      => $v[15],
                 'source'         => $v[16],
-                // 'firstOwer'      => '',
+                'firstOwer'      => '',
             ];
         }
         //
-        // $result      = $this->db->select('mobile,firstOwer')->where_in('mobile',$mobile)->group_by('mobile')->get_where('md_custom_list',['isShow' => 1])->result_array();
-        // $existMobile = [];
-        // foreach ($result as $v) {
-        //     $existMobile[$v['mobile']] = $v['firstOwer'];
-        // }
+        $result      = $this->db->select('mobile,firstOwer')->where_in('mobile',$mobile)->get_where('md_custom_list',['isShow' => 1,'firstOwer >' => 0])->result_array();
+        $existMobile = [];
+        foreach ($result as $v) {
+            $existMobile[$v['mobile']] = $v['firstOwer'];
+        }
+        foreach ($insert as $k => $v) {
+            if (!empty($existMobile[$v['mobile']])) {
+                $insert[$k]['firstOwer'] = $existMobile[$v['mobile']];
+            }
+        }
         // D($insert);
         $this->db->insert_batch('md_custom_list',$insert);
         // $this->db->where_in('mobile',$mobile)->update('md_custom_list',['isRepeat' => 2]);
@@ -299,6 +373,9 @@ class Member extends MY_Controller
         if (!empty($data['et'])) {
             $condition['a.created <='] = $data['et'] . ' 23:59:59';
         }
+        if (!empty($data['uid'])) {
+            $condition['a.uid'] = $data['uid'] . ' 23:59:59';
+        }
         if (!empty($data['content'])) {
             $condition['CONCAT(a.username,a.mobile) like'] = "%{$data['content']}%";
         }
@@ -336,10 +413,22 @@ class Member extends MY_Controller
     public function checkOrder()
     {
         $id     = $this->input->get('id');
-        $status = $this->input->post('status');
-        $result = $this->MemberModel->updateOrder($id,$status);
+        $data   = $this->input->post();
+        $result = $this->MemberModel->updateOrder($id,$data);
+
         if ($result['errcode'] == 200) {
             $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'orderList');
+        } else {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
+        }
+    }
+
+    public function delOrder()
+    {
+        $ids    = $this->input->post_get('delids');
+        $result = $this->MemberModel->toDelOrder($ids);
+        if ($result['errcode'] == 200) {
+            $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'orderList',false);
         } else {
             $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
         }

@@ -33,6 +33,47 @@ class AccountHelper
     }
 
     /**
+     * 短信验证登入
+     * @param  string $username
+     * @param  string $password
+     * @param  string $code
+     * @return array
+     */
+    public function codeLoginIn($username, $captcha)
+    {
+        $success = true;
+        $errors = array();
+        $type = 2;
+        get_instance()->load->model("admin/AccountModel", "ManageAccountModel");
+        $model = new AccountModel;
+        $rules = array(
+            'username'=>array(
+                array('required','账号不能为空'),
+                array('custom', 'AccountHelper::checkUsername',[$type])
+                ),
+            'captcha'=>array(
+                array('required', '验证码必须填写'),
+                array('custom', 'AccountHelper::checkPhoneCaptcha',[$username])
+                ),
+        );
+
+        $v = new DooValidator();
+        // $v->checkMode = DooValidator::CHECK_SKIP;
+        if($errors = $v->validate(array('username' => $username,'captcha'=> $captcha),$rules))
+        {
+            $success = false;
+        }
+        if($success){
+            // AccountHelper::$_accountData['login_num'] = AccountHelper::$_accountData['login_num'] + 1;
+            get_instance()->session->unset_userdata('code_'.$username);
+            $this->_writeLoginData(AccountHelper::$_accountData);
+        }
+
+        AccountHelper::$_accountData = '';
+        return array($success, $v->errorToString($errors));
+    }
+
+    /**
      * 登入
      * @param  string $username
      * @param  string $password
@@ -90,6 +131,64 @@ class AccountHelper
     {
         get_instance()->session->unset_userdata('account');
         get_instance()->session->unset_userdata('org');
+    }
+
+    public function toSendPhoneCode($username,$captcha)
+    {
+        $success = true;
+        $errors  = [];
+        $rules   = array(
+            'username'=>array(
+                array('required','账号不能为空'),
+                array('custom', 'AccountHelper::checkUsername')
+                ),
+            'captcha'=>array(
+                array('required', '验证码必须填写'),
+                array('custom', 'AccountHelper::checkCaptcha')
+                ),
+        );
+
+        $v = new DooValidator();
+        // $v->checkMode = DooValidator::CHECK_SKIP;
+        $errors = $v->validate(['username' => $username,'captcha'=> $captcha],$rules);
+        // D($errors);
+        if(!empty($errors)){
+            return array(false, $v->errorToString($errors));
+        }
+        // $code = get_instance()->cache->redis->get('code_'.$username);
+        $code = get_instance()->session->userdata('code_'.$username);
+        if (!empty($code)) {
+            return array(false, '请不要频繁操作');
+        }
+        // get_instance()->cache->redis->save('code_'.$mobile, $code, $ttl);
+        $code = rand(1000,9999);
+        get_instance()->session->set_tempdata('code_'.$username, $code,300);
+        sms($username,$code);
+        return array($success, '发送成功,请注意查收');
+    }
+
+    /**
+     * [checkUsername 检测登入名是否存在]
+     * @param  [type] $username [description]
+     * @return [type]           [description]
+     */
+    public static function checkUsername($username,$type = 1)
+    {
+        $valid = strlen($username) != 11 || !preg_match('/^1[3|4|5|7|8][0-9]\d{4,8}$/', $username) ? false : true;
+        if (!$valid) {
+            return '你输入正确的手机号';
+        }
+        get_instance()->load->model("admin/AccountModel", "ManageAccountModel");
+        $model = new AccountModel;
+        $info  = $model->userinfo($username);
+        if (empty($info)){
+            return '账号不正确';
+        }
+        if ($type == 2) {
+            $rules           = $model->getRules($info['role_id']);
+            $info['menu_id'] = $rules;
+            AccountHelper::$_accountData = $info;
+        }
     }
 
     /**
@@ -159,7 +258,7 @@ class AccountHelper
 
         if(empty($code2) || strtolower($code) != $code2)
         {
-            return $code.'验证码不正确'.$code2;
+            return '验证码不正确';
         }
 
         if(time() - 300 > $codeCreated)
@@ -167,6 +266,26 @@ class AccountHelper
             return '验证码过期';
         }
         get_instance()->session->unset_userdata(array('code', 'codeCreated'));
+
+    }
+
+    /**
+     * 检查验证码是否正确
+     * @param  [type] $value    [description]
+     * @return [type]           [description]
+     */
+    public static function checkPhoneCaptcha($code,$mobile)
+    {
+        // $code2 = get_instance()->cache->redis->get('code_'.$mobile);
+        $code2 = get_instance()->session->userdata('code_'.$mobile);
+        if(empty($code2))
+        {
+            return '验证码过期';
+        }
+
+        if ($code != $code2) {
+            return '验证码错误';
+        }
 
     }
 

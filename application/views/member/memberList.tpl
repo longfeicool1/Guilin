@@ -12,10 +12,18 @@
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
                    name="et" autocomplete="off" placeholder="预约时间结束"/>
+            <input data-toggle="datepicker" type="text"
+                       value="{{if isset($search['sct'])}}{{$search['sct']}}{{/if}}"
+                       name="sct" autocomplete="off"
+                       placeholder="最后备注时间开始"/>
+            <input data-toggle="datepicker" type="text"
+                   value="{{if isset($search['ect'])}}{{$search['ect']}}{{/if}}"
+                   name="ect" autocomplete="off" placeholder="最后备注时间结束"/>
             <select name="dataLevel" id="dataLevel" data-toggle="selectpicker">
                 <option {{if empty($search['dataLevel'])}}selected{{/if}} value="">--数据类型--</option>
                 <option value="A" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>
                 <option value="B" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'B'}}selected{{/if}}>B级</option>
+                <option value="C" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'C'}}selected{{/if}}>C级</option>
             </select>
             <select name="customLevel" id="customLevel" data-toggle="selectpicker">
                 <option {{if empty($search['customLevel'])}}selected{{/if}} value="">--名单星级--</option>
@@ -30,6 +38,12 @@
                 <option {{if empty($search['firstOwer'])}}selected{{/if}} value="">--业务员--</option>
                 {{foreach $users as $v}}
                 <option {{if !empty($search['firstOwer']) && $search['firstOwer'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
+                {{/foreach}}
+            </select>
+            <select name="source" id="customLevel" data-toggle="selectpicker">
+                <option {{if empty($search['customLevel'])}}selected{{/if}} value="">--来源--</option>
+                {{foreach $source as $v}}
+                <option {{if !empty($search['source']) && $search['source'] == $v['source']}}selected{{/if}} value="{{$v['source']}}">{{$v['source']}}</option>
                 {{/foreach}}
             </select>
             <div style="width: 100%;margin-top: 5px;">
@@ -63,7 +77,7 @@
                 {{if checkAuth(155)}}
                 <a class="btn btn-blue" href="/static/example.xls" onclick="customFileDown(this);return false;" target="_blank" data-icon="cloud-download">下载模板</a>
                 {{/if}}
-                {{if checkAuth(144)}}
+                {{if checkAuth(145)}}
                     <a class="btn btn-blue" href="javascript:;" onclick="memberListExport()" target="_blank" data-icon="cloud-download">导出</a>
                 {{/if}}
                 {{if checkAuth(157)}}
@@ -90,19 +104,38 @@
                 <th>年龄</th>
                 <th>手机</th>
                 <th>城市</th>
+                {{if checkAuth(166)}}
                 <th>职业</th>
+                {{/if}}
+                {{if checkAuth(167)}}
                 <th>发薪方式</th>
+                {{/if}}
+                {{if checkAuth(168)}}
                 <th>收入</th>
+                {{/if}}
+                {{if checkAuth(169)}}
                 <th>社保</th>
+                {{/if}}
+                {{if checkAuth(170)}}
                 <th>公积金</th>
+                {{/if}}
+                {{if checkAuth(171)}}
                 <th>有房</th>
+                {{/if}}
+                {{if checkAuth(172)}}
                 <th>有车</th>
+                {{/if}}
                 <th>业务员</th>
                 <th>预约时间</th>
                 <th>用户状态</th>
+                {{if checkAuth(173)}}
                 <th>数据类型</th>
+                {{/if}}
+                {{if checkAuth(174)}}
                 <th>数据来源</th>
+                {{/if}}
                 <th>名单星级</th>
+                <th>N天未联系</th>
                 <th>操作</th>
             </tr>
         </thead>
@@ -119,21 +152,40 @@
                 <td>{{$v['age']}}</td>
                 <td>{{$v['mobile']}}</td>
                 <td>{{$v['city']}}</td>
+                {{if checkAuth(166)}}
                 <td>{{$v['occapation']}}</td>
+                {{/if}}
+                {{if checkAuth(167)}}
                 <td>{{$v['payType']}}</td>
+                {{/if}}
+                {{if checkAuth(168)}}
                 <td>{{$v['income']}}</td>
+                {{/if}}
+                {{if checkAuth(169)}}
                 <td>{{$v['socialSecurity']}}</td>
+                {{/if}}
+                {{if checkAuth(170)}}
                 <td>{{$v['reservedFunds']}}</td>
+                {{/if}}
+                {{if checkAuth(171)}}
                 <td>{{$v['haveHouse']}}</td>
+                {{/if}}
+                {{if checkAuth(172)}}
                 <td>{{$v['haveCar']}}</td>
+                {{/if}}
                 <td>{{$v['firstName']}}</td>
                 <td>{{$v['meetTime']}}</td>
                 <td>{{$v['customStatus']}}</td>
+                {{if checkAuth(173)}}
                 <td>{{$v['dataLevel']}}</td>
+                {{/if}}
+                {{if checkAuth(174)}}
                 <td>{{$v['source']}}</td>
+                {{/if}}
                 <td>{{$v['customLevel']}}</td>
+                <td>{{$v['dayNoCall']}}</td>
                 <td>
-                    {{if checkAuth(144)}}
+                    {{if checkAuth(156)}}
                         <a href="/member/member/createCheckOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="审件生成">审件生成</a>
                     {{/if}}
                     {{if checkAuth(144)}}
@@ -158,8 +210,20 @@
     })
 
     function memberListExport(){
-        var str = $('.frm_member').serialize();
-        var gourl = '/member/member/memberDownload?' + str;
+        var str = '';
+        var params = '';
+        $('#customListTable input[type="checkbox"]').each(function (k, v) {
+            if ($(this).is(':checked')) {
+                str += $(this).val() + ',';
+            }
+        });
+        if (str) {
+            params = 'ids=' + str
+        } else {
+            params = $('.frm_member').serialize();
+        }
+
+        var gourl = '/member/member/memberDownload?' + params;
         window.open(gourl);
     }
 

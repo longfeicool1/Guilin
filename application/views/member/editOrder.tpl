@@ -16,21 +16,22 @@
         <tr>
             <td>
                 <label for="channel" class="control-label x90">进件渠道：</label>
-                <input type="text" name="channel" value="{{$data['channel']}}" class="form-control">
+                <input type="text" name="channel" value="{{$data['channel']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
             </td>
             <td>
                 <label for="product" class="control-label x90">贷款产品：</label>
-                <input type="text" name="product" value="{{$data['product']}}" class="form-control">
+                <input type="text" name="product" value="{{$data['product']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
             </td>
         </tr>
         <tr>
             <td>
                 <label for="money" class="control-label x90">贷款额度：</label>
-                <input type="text" name="money" value="{{$data['money']}}" class="form-control">
+                <input type="text" name="money" value="{{$data['money']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
             </td>
             <td>
                 <label for="rate" class="control-label x90">费率：</label>
-                <input type="text" name="rate" value="{{$data['rate']}}" class="form-control">
+                <input type="text" name="rate" value="{{$data['rate']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
+                <span>%</span>
             </td>
         </tr>
         <tr>
@@ -50,21 +51,51 @@
             </td>
             <td>
                 <label for="status" class="control-label x90">审核状态：</label>
+                {{if $data['status'] == 6}}
+                <span>已收款</span>
+                {{else}}
                 <select name="status" id="status" data-toggle="selectpicker">
                     <option {{if $data['status'] == 1}}selected{{/if}} value="1">--请选择--</option>
                     <option {{if $data['status'] == 2}}selected{{/if}} value="2">在审中</option>
                     <option {{if $data['status'] == 3}}selected{{/if}} value="3">已拒款</option>
                     <option {{if $data['status'] == 4}}selected{{/if}} value="4">客户已拒款</option>
                     <option {{if $data['status'] == 5}}selected{{/if}} value="5">未进件</option>
-                    {{if !in_array($this->userinfo['position'],[1,5])}}
-                    <option {{if $data['status'] == 6}}selected{{/if}} value="6">已收款</option>
-                    {{/if}}
                 </select>
+                {{/if}}
+
             </td>
         </tr>
-
     </table>
 </fieldset>
+{{if $data['status'] == 6}}
+<fieldset>
+    <legend>结单信息</legend>
+    <table class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
+        <tr>
+            <td>
+                <label for="sendMoney" class="control-label x90">批款额度：</label>
+                <span>{{$data['sendMoney']}}</span>
+            </td>
+            <td>
+                <label for="sendTime" class="control-label x90">收款时间：</label>
+                <span>{{if $data['sendTime'] != '0000-00-00 00:00:00'}}{{$data['sendTime']}}{{/if}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="income" class="control-label x90">创收：</label>
+                <span>{{$data['income']}}</span>
+            </td>
+            <td>
+                <label for="income" class="control-label x90">诚意金去向：</label>
+                {{if $data['isBackMoney'] == 1}}<span>未退款</span>{{/if}}
+                {{if $data['isBackMoney'] == 2}}<span>已退款</span>{{/if}}
+                {{if $data['isBackMoney'] == 3}}<span>转创收</span>{{/if}}
+            </td>
+        </tr>
+    </table>
+</fieldset>
+{{/if}}
 </form>
 </div>
 <div class="bjui-pageFooter">

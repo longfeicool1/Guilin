@@ -8,6 +8,7 @@ class Fun extends MY_Controller
         parent::__construct();
         $this->load->model('fun/FunModel');
         $this->load->model('admin/UserModel');
+        $this->load->model('member/MemberModel');
         $this->load->model('CommonModel');
     }
 
@@ -40,7 +41,7 @@ class Fun extends MY_Controller
     public function reallot()
     {
         $ids     = $this->input->get('ids');
-        $saleman = $this->UserModel->getUserList(1,99,['position' => 5]);
+        $saleman = $this->MemberModel->getUser();
         $this->ci_smarty->assign('saleman', $saleman);
         $this->ci_smarty->assign('ids', $ids);
         $this->ci_smarty->display('fun/reallot.tpl');

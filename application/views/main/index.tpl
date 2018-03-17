@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>鼎然科技</title>
+    <title>91特贷网</title>
     <meta name="Keywords" content="UBI后台管理"/>
     <meta name="Description" content="UBI后台管理"/>
     <!-- bootstrap - css -->
@@ -257,7 +257,7 @@
                     data-target="#bjui-navbar-collapse">
                 <i class="fa fa-bars"></i>
             </button>
-            <a class="bjui-navbar-logo" href="#"><img src="/static/images/logo.png"></a>
+            <a class="bjui-navbar-logo" href="#"><img src="/static/images/logo1.png" style="width:90px;"></a>
         </div>
         <nav id="bjui-navbar-collapse">
             <ul class="bjui-navbar-right">

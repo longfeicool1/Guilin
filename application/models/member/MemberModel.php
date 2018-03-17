@@ -91,15 +91,9 @@ class MemberModel extends MY_Model
         return !empty($this->$type) ? $this->$type : [];
     }
 
-    public function rules()
+    public function getSource()
     {
-        if ($this->userinfo['role_id'] != 1) { //超级管理员
-            $sql    = "SELECT uid FROM md_user WHERE FIND_IN_SET(?,path)";
-            $result = $this->db->query($sql,[$this->userinfo['uid']])->result_array();
-            $uids   = array_column($result,'uid');
-            $uids[] = $this->userinfo['uid'];
-            return $this->uids = $uids;
-        }
+        return $this->db->select('source')->group_by('source')->get('md_custom_list')->result_array();
     }
 
     public function getUser()
@@ -108,11 +102,11 @@ class MemberModel extends MY_Model
         if (!empty($this->uids)) {
             $this->db->where_in('uid',$this->uids);
         }
-        $result = $this->db->get_where('md_user',['position' => 5])->result_array();
+        $result = $this->db->get_where('md_user',['position >=' => 3])->result_array();
         return $result;
     }
 
-    public function getMemberList($page,$size,$condition)
+    public function getMemberList($page,$size,$condition,$whereOr = [])
     {
         if ($condition) {
             foreach ($condition as $k=>$v) {
@@ -125,6 +119,10 @@ class MemberModel extends MY_Model
         if(!empty($this->uids)){
             $this->db->where_in('firstOwer',$this->uids);
         }
+        // D($this->uids);
+        if ($whereOr) {
+            $this->db->where("(`callType` = 1 OR `isAllot` = 2)");
+        }
         // print_r($this->uids);die;
         $offset = ($page - 1) * $size;
         $result = $this->db
@@ -134,6 +132,7 @@ class MemberModel extends MY_Model
             ->order_by('meetTime DESC,a.updated DESC,a.created DESC')
             ->get('md_custom_list a')
             ->result_array();
+        // D($this->db->last_query());
         $n = 0;
         foreach ($result as $k => $v) {
             $n++;
@@ -147,11 +146,20 @@ class MemberModel extends MY_Model
             $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '新数据' : $this->customLevel[$v['customLevel']];
             $result[$k]['meetTime']        = $v['meetTime'] == '0000-00-00 00:00:00' ? '未预约' : $v['meetTime'];
             $result[$k]['customStatus']    = $this->customStatus[$v['customStatus']];
+            if (!empty($v['firstOwer'])) {
+                $result[$k]['dayNoCall'] = '暂无';
+            } else {
+                if ($v['updated'] == '0000-00-00 00:00:00') {
+                    $result[$k]['dayNoCall'] = round((time() - strtotime($v['created']))/86400) . '天';
+                } else {
+                    $result[$k]['dayNoCall'] = round((time() - strtotime($v['updated']))/86400) . '天';
+                }
+            }
         }
         return $result;
     }
 
-    public function getMemberCount($condition)
+    public function getMemberCount($condition,$whereOr)
     {
         if ($condition) {
             foreach ($condition as $k=>$v) {
@@ -163,6 +171,9 @@ class MemberModel extends MY_Model
         }
         if(!empty($this->uids)){
             $this->db->where_in('firstOwer',$this->uids);
+        }
+        if ($whereOr) {
+            $this->db->where("(`callType` = 1 OR `isAllot` = 2)");
         }
         $count = $this->db->count_all_results('md_custom_list a');
         return $count;
@@ -180,19 +191,21 @@ class MemberModel extends MY_Model
 
     public function toUpdateInfo($id,$data)
     {
-        foreach ($data as $k => $v) {
-            if (empty($v)) {
-                unset($data[$k]);
-            }
-        }
-        if (!empty($data['content'])) {
-            $content = $data['content'];unset($data['content']);
+        // foreach ($data as $k => $v) {
+        //     if (empty($v)) {
+        //         unset($data[$k]);
+        //     }
+        // }
+        if (!empty($data['lastComment'])) {
+            $content = $data['lastComment'];
             $this->db->insert('md_comment',[
                 'uid'     => $this->userinfo['uid'],
                 'cid'     => $id,
                 'content' => $content,
             ]);
         }
+        // D($data);
+        $data['isAllot'] = 1;
         if ($this->db->update('md_custom_list',$data,['id' => $id]) !== false) {
             return ['errcode' => 200, 'errmsg' => '更新成功'];
         }
@@ -253,7 +266,7 @@ class MemberModel extends MY_Model
             $this->rules();
         }
         if(!empty($this->uids)){
-            $this->db->where_in('uid',$this->uids);
+            $this->db->where_in('a.uid',$this->uids);
         }
         $offset = ($page - 1) * $size;
         $result = $this->db
@@ -285,7 +298,7 @@ class MemberModel extends MY_Model
             $this->rules();
         }
         if(!empty($this->uids)){
-            $this->db->where_in('uid',$this->uids);
+            $this->db->where_in('a.uid',$this->uids);
         }
         $count = $this->db->count_all_results('md_check_order a');
         return $count;
@@ -309,11 +322,19 @@ class MemberModel extends MY_Model
         return ['errcode' => 300, 'errmsg' => '编辑失败'];
     }
 
-    public function updateOrder($id,$status)
+    public function updateOrder($id,$data)
     {
-        if ($this->db->update('md_check_order',['status' => $status],['id' => $id])) {
+        if ($this->db->update('md_check_order',$data,['id' => $id])) {
             return ['errcode' => 200, 'errmsg' => '审核成功'];
         }
         return ['errcode' => 300, 'errmsg' => '审核失败'];
+    }
+
+    public function toDelOrder($ids)
+    {
+        if ($this->db->where_in('id',explode(',',$ids))->delete('md_check_order')) {
+            return ['errcode' => 200, 'errmsg' => '删除成功'];
+        }
+        return ['errcode' => 300, 'errmsg' => '删除失败'];
     }
 }

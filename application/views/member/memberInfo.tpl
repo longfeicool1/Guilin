@@ -10,7 +10,7 @@
             </td>
             <td colspan="2">
                 <label for="mobile" class="control-label x90">手机号码：</label>
-                <input type="text" name="mobile" data-rule="required;mobile;" value="{{$data['mobile']}}" class="form-control" readonly="">
+                <input type="text" name="mobile" data-rule="required;mobile;" value="{{$data['mobile']}}" class="form-control">
             </td>
         </tr>
         <tr>
@@ -181,8 +181,8 @@
     <table class="table table-bordered table-hover table-striped table-top table_width" data-selected-multi="true" style="margin-top:5px ">
         <tr>
             <td colspan="3">
-                <label for="content" class="control-label x90">新增备注：</label>
-                <textarea class="form-control autosize" name="content" rows="3" cols="45" data-rule="required;"></textarea>
+                <label for="lastComment" class="control-label x90">新增备注：</label>
+                <textarea class="form-control autosize" name="lastComment" rows="3" cols="45" data-rule="required;"></textarea>
             </td>
         </tr>
         <!-- <tr>

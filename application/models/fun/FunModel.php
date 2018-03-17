@@ -39,15 +39,26 @@ class FunModel extends MY_Model
 
     public function getSalesman()
     {
-        $sql = "SELECT a.uid,a.name,b.name AS parentName FROM md_user a
-            JOIN md_user b ON a.parent_id = b.uid
-            WHERE FIND_IN_SET(?,a.path) AND a.position = 5 AND a.is_show = 1";
+        $sql = "SELECT
+            a.uid,
+            a.name,
+            a.position
+            -- b.name AS parentName
+            FROM md_user a
+            -- JOIN md_user b ON a.parent_id = b.uid
+            WHERE FIND_IN_SET(?,a.path) AND a.position >= 3 AND a.is_show = 1
+            ORDER BY concat(path, ',', uid)";
         $result = $this->db->query($sql,[$this->userinfo['uid']])->result_array();
-        $return = [];
-        foreach ($result as $v) {
-            $return[$v['parentName']][] = ['uid' => $v['uid'],'name' => $v['name']];
+        // $return = [];
+        foreach ($result as $k => $v) {
+            if ($v['position'] == 3) {
+                $result[$k]['positionName'] = '区';
+            }
+            if ($v['position'] == 4) {
+                $result[$k]['positionName'] = '团';
+            }
         }
-        return $return;
+        return $result;
     }
 
     public function toAllot($rules)
@@ -102,8 +113,12 @@ class FunModel extends MY_Model
         foreach ($allReturn as $uid => $customIds) {
             $this->db->where_in('id',$customIds)->update('md_custom_list',['firstOwer' => $uid,'give_time' => date('Y-m-d H:i:s')]);
         }
+
         //获取用户姓名
         $uids = array_keys($lastUsers);
+        if (!$uids) {
+            return ['errcode' => 201,'errmsg'=> '已足额分配成功'];
+        }
         $user = $this->db->select('name,uid')->where_in('uid',$uids)->get('md_user')->result_array();
         $nuser = [];
         foreach ($user as $v) {
@@ -197,7 +212,7 @@ class FunModel extends MY_Model
     public function toReallot($data)
     {
         $ids    = explode(',',trim($data['ids'], ','));
-        $update = ['firstOwer' => $data['firstOwer']];
+        $update = ['firstOwer' => $data['firstOwer'],'isAllot' => 2];
         if ($data['meetTime']) {
             $update['meetTime'] = $data['meetTime'];
         }
