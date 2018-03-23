@@ -6,11 +6,13 @@
         <tr>
             <td>
                 <label for="username" class="control-label x90">姓名：</label>
-                <input type="text" value="{{$data['username']}}" class="form-control" disabled>
+                <input type="text" name="username" value="{{$data['username']}}" class="form-control" {{if !checkAuth(183)}}disabled{{/if}}>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="mobile" class="control-label x90">手机号码：</label>
-                <input type="text" value="{{$data['mobile']}}" class="form-control" disabled>
+                <input type="text" name="mobile" value="{{$data['mobile']}}" class="form-control"  {{if !checkAuth(184)}}disabled{{/if}}>
             </td>
         </tr>
         <tr>
@@ -18,6 +20,8 @@
                 <label for="channel" class="control-label x90">进件渠道：</label>
                 <input type="text" name="channel" value="{{$data['channel']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="product" class="control-label x90">贷款产品：</label>
                 <input type="text" name="product" value="{{$data['product']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
@@ -28,6 +32,8 @@
                 <label for="money" class="control-label x90">贷款额度：</label>
                 <input type="text" name="money" value="{{$data['money']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="rate" class="control-label x90">费率：</label>
                 <input type="text" name="rate" value="{{$data['rate']}}" class="form-control" {{if $data['status'] == 6}}disabled{{/if}}>
@@ -39,6 +45,8 @@
                 <label for="deposit" class="control-label x90">诚意金：</label>
                 <span>{{$data['deposit']}}</span>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="uid" class="control-label x90">业务员：</label>
                 <span>{{$data['firstName']}}</span>
@@ -47,8 +55,10 @@
         <tr>
             <td>
                 <label for="secondUid" class="control-label x90">后勤对接人员：</label>
-                <input type="text" value="{{$data['secondUid']}}" class="form-control" disabled>
+                <input type="text" name="secondUid" value="{{$data['secondUid']}}" class="form-control" {{if !checkAuth(185)}}disabled{{/if}}>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="status" class="control-label x90">审核状态：</label>
                 {{if $data['status'] == 6}}

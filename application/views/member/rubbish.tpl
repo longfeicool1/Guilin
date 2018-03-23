@@ -1,5 +1,5 @@
 <div class="bjui-pageHeader" style="marign:5px;">
-    <form id="pagerForm" class="frm_rubbish" data-toggle="ajaxsearch" action="/finance/financeManage/rewardList" method="post">
+    <form id="pagerForm" class="frm_rubbish" data-toggle="ajaxsearch" action="/member/member/rubbish" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <!-- <input type="hidden" name="orderField" value="${param.orderField}">
@@ -92,7 +92,7 @@
                 <td>{{$v['customLevel']}}</td>
                 <td>
                     {{if checkAuth(144)}}
-                    <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
+                    <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="1200" data-height="800" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
                     {{/if}}
                     {{if checkAuth(149)}}
                     <a href="/member/member/back?delids={{$v['id']}}" class="btn btn-blue"  data-toggle="doajax" data-confirm-msg="是否恢复该记录?该记录将恢复到初始状态">恢复</a>

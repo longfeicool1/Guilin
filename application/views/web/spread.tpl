@@ -78,6 +78,7 @@
           <div class="text-cen">贷款申请</div>
           <div class="page-list-item ">
           <form action="/web/spread" method="post">
+            <input type="hidden" name="channel" value="{{$channel}}">
             <div style="display: flex;padding-top: .3rem">
               <div style="width: 60%;margin-left: 0.5rem;border: 1px solid #b4b4b4;border-radius: .25rem;">
                 <input type="text" name="name" style="border:0;height: 2rem;padding-left: .4rem;color: #3d4145" placeholder='请填写您的真实姓名  '/>

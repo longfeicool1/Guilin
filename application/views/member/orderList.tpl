@@ -26,11 +26,14 @@
                 <option {{if !empty($search['uid']) && $search['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
                 {{/foreach}}
             </select>
-            <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名)">
+            <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名、城市)">
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
             <div style="margin-top: 5px">
                 <div class="pull-right">
+                {{if checkAuth(182)}}
+                    <a class="btn btn-blue" href="javascript:;" onclick="checkOrderListExport()" target="_blank" data-icon="cloud-download">导出</a>
+                {{/if}}
                 </div>
             </div>
 
@@ -51,7 +54,6 @@
                 <th>费率</th>
                 <th>定金</th>
                 <th>业务员</th>
-                <th>后勤对接员</th>
                 <th>退定金?</th>
                 {{if checkAuth(164)}}
                 <th>批款额度</th>
@@ -79,7 +81,6 @@
                 <td>{{$v['rate']}}%</td>
                 <td>{{$v['deposit']}}</td>
                 <td>{{$v['firstName']}}</td>
-                <td>{{$v['secondUid']}}</td>
                 {{if !in_array($userinfo['position'],[1,5])|| $userinfo['role_id'] == 1}}{{/if}}
                 <td>{{$v['isBackMoney']}}</td>
                 {{if checkAuth(164)}}
@@ -88,13 +89,13 @@
                 <td>{{$v['sendTime']}}</td>
                 {{/if}}
                 <td>{{$v['orderStatus']}}</td>
-                <td>{{$v['created']}}</td>
+                <td>{{date('Y-m-d',strtotime($v['created']))}}</td>
                 <td>
                     {{if checkAuth(161)}}
-                    <a href="/member/member/editOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="400" data-id="editOrder" data-toggle="dialog" data-title="编辑审件">编辑</a>
+                    <a href="/member/member/editOrder?id={{$v['id']}}" class="btn btn-green" data-width="500" data-height="450" data-id="editOrder" data-toggle="dialog" data-title="编辑审件">编辑</a>
                     {{/if}}
                     {{if checkAuth(160)}}
-                        <a href="/member/member/orderInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="400" data-id="orderInfo" data-toggle="dialog" data-title="审核审件">审核</a>
+                        <a href="/member/member/orderInfo?id={{$v['id']}}" class="btn btn-blue" data-width="600" data-height="510" data-id="orderInfo" data-toggle="dialog" data-title="审核审件">审核</a>
                     {{/if}}
                     {{if checkAuth(181)}}
                         <a href="/member/member/delOrder?delids={{$v['id']}}" class="btn btn-red"  data-toggle="doajax" data-confirm-msg="是否删除该记录">删除</a>
@@ -114,9 +115,9 @@
         $('.frm_order').submit();
     })
 
-    function memberListExport(){
+    function checkOrderListExport(){
         var str = $('.frm_order').serialize();
-        var gourl = '/member/member/memberDownload?' + str;
+        var gourl = '/member/member/checkOrderListExport?' + str;
         window.open(gourl);
     }
 

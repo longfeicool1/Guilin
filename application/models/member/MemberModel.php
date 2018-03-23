@@ -129,7 +129,7 @@ class MemberModel extends MY_Model
             ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
             ->join('md_user b','a.firstOwer = b.uid','left')
             ->limit($size,$offset)
-            ->order_by('meetTime DESC,a.updated DESC,a.created DESC')
+            ->order_by('meetTime ASC,a.updated DESC,a.created DESC')
             ->get('md_custom_list a')
             ->result_array();
         // D($this->db->last_query());
@@ -145,7 +145,7 @@ class MemberModel extends MY_Model
             $result[$k]['haveCar']         = $this->haveCar[$v['haveCar']];
             $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '新数据' : $this->customLevel[$v['customLevel']];
             $result[$k]['meetTime']        = $v['meetTime'] == '0000-00-00 00:00:00' ? '未预约' : $v['meetTime'];
-            $result[$k]['customStatus']    = $this->customStatus[$v['customStatus']];
+            $result[$k]['customStatus']    = !empty($this->customStatus[$v['customStatus']]) ? $this->customStatus[$v['customStatus']] : '无';
             if (!empty($v['firstOwer'])) {
                 $result[$k]['dayNoCall'] = '暂无';
             } else {
@@ -196,6 +196,9 @@ class MemberModel extends MY_Model
         //         unset($data[$k]);
         //     }
         // }
+        if (empty($data['customStatus'])) {
+            unset($data['customStatus']);
+        }
         if (!empty($data['lastComment'])) {
             $content = $data['lastComment'];
             $this->db->insert('md_comment',[
@@ -206,6 +209,7 @@ class MemberModel extends MY_Model
         }
         // D($data);
         $data['isAllot'] = 1;
+
         if ($this->db->update('md_custom_list',$data,['id' => $id]) !== false) {
             return ['errcode' => 200, 'errmsg' => '更新成功'];
         }
@@ -225,8 +229,14 @@ class MemberModel extends MY_Model
 
     public function toDelMember($ids)
     {
+        $sql = "update `md_custom_list` b
+            join (select count(*) as tot,mobile from `md_custom_list` where isShow = 1 AND isRepeat =2 group by mobile) as a
+            on a.mobile = b.mobile
+            set isRepeat = 1 WHERE a.tot = 1";
         // print_r($ids);die;
         if ($this->db->where_in('id',explode(',',$ids))->update('md_custom_list',['isShow' => 2])) {
+            //执行重复数据检测
+            $this->db->query($sql);
             return ['errcode' => 200, 'errmsg' => '删除成功'];
         }
         return ['errcode' => 300, 'errmsg' => '删除失败'];
@@ -270,8 +280,10 @@ class MemberModel extends MY_Model
         }
         $offset = ($page - 1) * $size;
         $result = $this->db
-            ->select("a.*,b.name as firstName")
+            ->select("a.*,b.name as firstName,c.name as team,d.name as area")
             ->join('md_user b','a.uid = b.uid','left')
+            ->join('md_user c','b.parent_id = c.uid','left')
+            ->join('md_user d','d.parent_id = d.uid','left')
             ->limit($size,$offset)
             ->order_by('a.created DESC')
             ->get('md_check_order a')
@@ -300,7 +312,9 @@ class MemberModel extends MY_Model
         if(!empty($this->uids)){
             $this->db->where_in('a.uid',$this->uids);
         }
-        $count = $this->db->count_all_results('md_check_order a');
+        $count = $this->db
+        ->join('md_user b','a.uid = b.uid','left')
+        ->count_all_results('md_check_order a');
         return $count;
     }
 
@@ -332,9 +346,68 @@ class MemberModel extends MY_Model
 
     public function toDelOrder($ids)
     {
+
         if ($this->db->where_in('id',explode(',',$ids))->delete('md_check_order')) {
             return ['errcode' => 200, 'errmsg' => '删除成功'];
         }
         return ['errcode' => 300, 'errmsg' => '删除失败'];
     }
+
+    public function getSearchList($page,$size,$condition)
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        // D($this->uids);
+        // print_r($this->uids);die;
+        $offset = ($page - 1) * $size;
+        $result = $this->db
+            ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
+            ->join('md_user b','a.firstOwer = b.uid','left')
+            ->limit($size,$offset)
+            ->order_by('meetTime ASC,a.updated DESC,a.created DESC')
+            ->get('md_custom_list a')
+            ->result_array();
+        // D($this->db->last_query());
+        $n = 0;
+        foreach ($result as $k => $v) {
+            $n++;
+            $result[$k]['xuhao']           = $n;
+            $result[$k]['sex']             = $this->sex[$v['sex']];
+            $result[$k]['payType']         = $this->payType[$v['payType']];
+            $result[$k]['socialSecurity']  = $this->socialSecurity[$v['socialSecurity']];
+            $result[$k]['reservedFunds']   = $this->reservedFunds[$v['reservedFunds']];
+            $result[$k]['haveHouse']       = $this->haveHouse[$v['haveHouse']];
+            $result[$k]['haveCar']         = $this->haveCar[$v['haveCar']];
+            $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '新数据' : $this->customLevel[$v['customLevel']];
+            $result[$k]['meetTime']        = $v['meetTime'] == '0000-00-00 00:00:00' ? '未预约' : $v['meetTime'];
+            $result[$k]['customStatus']    = !empty($this->customStatus[$v['customStatus']]) ? $this->customStatus[$v['customStatus']] : '无';
+            $result[$k]['isShowName']      = $v['isShow'] == 1 ? '正常' : '已删';
+            if (!empty($v['firstOwer'])) {
+                $result[$k]['dayNoCall'] = '暂无';
+            } else {
+                if ($v['updated'] == '0000-00-00 00:00:00') {
+                    $result[$k]['dayNoCall'] = round((time() - strtotime($v['created']))/86400) . '天';
+                } else {
+                    $result[$k]['dayNoCall'] = round((time() - strtotime($v['updated']))/86400) . '天';
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function getSearchCount($condition)
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        $count = $this->db->count_all_results('md_custom_list a');
+        return $count;
+    }
+
+
 }

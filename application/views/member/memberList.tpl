@@ -1,3 +1,6 @@
+<style type="text/css">
+    .font-color{color: #FF6600}
+</style>
 <div class="bjui-pageHeader" style="marign:5px;">
     <form id="pagerForm" class="frm_member" data-toggle="ajaxsearch" action="/member/member/memberList" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
@@ -74,6 +77,9 @@
                 <input type="hidden" name="t" value="{{if !empty($search['t'])}}{{$search['t']}}{{/if}}"/>
                 &nbsp;
                 <div class="pull-right">
+                {{if checkAuth(156)}}
+                    <a href="/member/member/createCheckOrder" class="btn btn-green" data-width="800" data-height="600" data-id="createCheckOrder" data-toggle="dialog" data-title="审件生成">审件生成</a>
+                {{/if}}
                 {{if checkAuth(155)}}
                 <a class="btn btn-blue" href="/static/example.xls" onclick="customFileDown(this);return false;" target="_blank" data-icon="cloud-download">下载模板</a>
                 {{/if}}
@@ -142,7 +148,7 @@
         <tbody>
             {{if $list}}
             {{foreach $list as $v}}
-            <tr data-id="{{$v['id']}}">
+            <tr data-id="{{$v['id']}}" {{if $v['isRepeat'] == 2}}class="font-color"{{/if}}>
                 <td>
                     <input type="checkbox" class="icheckbox_minimal-purple" name="ids" data-toggle="icheck" value="{{$v['id']}}">
                 </td>
@@ -185,11 +191,8 @@
                 <td>{{$v['customLevel']}}</td>
                 <td>{{$v['dayNoCall']}}</td>
                 <td>
-                    {{if checkAuth(156)}}
-                        <a href="/member/member/createCheckOrder?id={{$v['id']}}" class="btn btn-green" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="审件生成">审件生成</a>
-                    {{/if}}
                     {{if checkAuth(144)}}
-                        <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="800" data-height="600" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
+                        <a href="/member/member/memberInfo?id={{$v['id']}}" class="btn btn-blue" data-width="1200" data-height="800" data-id="memberInfo" data-toggle="dialog" data-title="用户详情">详情</a>
                     {{/if}}
                     {{if checkAuth(146)}}
                         <a href="/member/member/delMember?delids={{$v['id']}}" class="btn btn-red"  data-toggle="doajax" data-confirm-msg="是否删除该记录">删除</a>
@@ -198,7 +201,7 @@
             </tr>
             {{/foreach}}
             {{else}}
-            <tr><td colspan="20" style="text-align: center;">尚未查询到任何相关数据...</td></tr>
+            <tr><td colspan="30" style="text-align: center;">尚未查询到任何相关数据...</td></tr>
             {{/if}}
         </tbody>
     </table>

@@ -7,11 +7,11 @@
         <tr>
             <td>
                 <label for="username" class="control-label x90">姓名：</label>
-                <input type="text" name="username" id="username" data-rule="required;" value="{{if $data['name']}}{{$data['name']}}{{/if}}" class="form-control">
+                <input type="text" name="username" id="username" data-rule="required;" value="{{if !empty($data) && $data['name']}}{{$data['name']}}{{/if}}" class="form-control">
             </td>
             <td>
                 <label for="mobile" class="control-label x90">手机号码：</label>
-                <input type="text" name="mobile" data-rule="required;mobile;" value="{{if $data['mobile']}}{{$data['mobile']}}{{/if}}" class="form-control">
+                <input type="text" name="mobile" data-rule="required;mobile;" value="{{if !empty($data) && $data['mobile']}}{{$data['mobile']}}{{/if}}" class="form-control">
             </td>
         </tr>
         <tr>
@@ -42,8 +42,8 @@
             </td>
             <td>
                 <label for="uid" class="control-label x90">业务员：</label>
-                <span>{{$data['firstName']}}</span>
-                <input type="hidden" name="uid" value="{{if $data['firstOwer']}}{{$data['firstOwer']}}{{/if}}">
+                <span>{{$userinfo['name']}}</span>
+                <input type="hidden" name="uid" value="{{$userinfo['uid']}}">
             </td>
         </tr>
         <tr>

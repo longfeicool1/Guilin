@@ -12,17 +12,20 @@
                 <label for="username" class="control-label x90">姓名：</label>
                 <span>{{$data['username']}}</span>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="mobile" class="control-label x90">手机号码：</label>
                 <span>{{$data['mobile']}}</span>
             </td>
         </tr>
-
         <tr>
             <td>
                 <label for="channel" class="control-label x90">进件渠道：</label>
                 <span>{{$data['channel']}}</span>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="product" class="control-label x90">贷款产品：</label>
                 <span>{{$data['product']}}</span>
@@ -33,6 +36,8 @@
                 <label for="money" class="control-label x90">贷款额度：</label>
                 <span>{{$data['money']}}</span>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="rate" class="control-label x90">费率：</label>
                 <span>{{$data['rate']}}%</span>
@@ -52,6 +57,8 @@
                 <input type="radio" value="3" name="isBackMoney" data-toggle="icheck" data-label="转创收" {{if $data['isBackMoney'] == 3}}checked{{/if}}>
                 {{/if}}
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="uid" class="control-label x90">业务员：</label>
                 <span>{{$data['firstName']}}</span>
@@ -62,6 +69,8 @@
                 <label for="secondUid" class="control-label x90">后勤对接人员：</label>
                 <span>{{$data['secondUid']}}</span>
             </td>
+        </tr>
+        <tr>
             <td>
                 <label for="status" class="control-label x90">审核状态：</label>
                 <select name="status" id="status" data-toggle="selectpicker" onchange="addInfo(this)">

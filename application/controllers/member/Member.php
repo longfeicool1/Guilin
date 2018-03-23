@@ -82,16 +82,47 @@ class Member extends MY_Controller
         $this->ci_smarty->display('member/memberList.tpl');
     }
 
+    public function searchMember()
+    {
+        $data = $this->input->post();
+        if ($data) {
+            $this->session->set_userdata('searchMember', $data);
+        } else {
+            $data = $this->session->userdata('searchMember');
+        }
+        // echo '<pre>';print_r($this->userinfo);die;
+        $condition = [];
+        if (!empty($data['content'])) {
+            $condition['CONCAT(a.name,a.mobile) like'] = "%{$data['content']}%";
+            $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
+            $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
+            $list  = $this->MemberModel->getSearchList($page,$size,$condition);
+            $count = $this->MemberModel->getSearchCount($condition);
+        } else {
+            $count = 0;$list = [];
+        }
+        // print_r($list);die;
+        $this->ci_smarty->assign('list',$list);
+        $this->ci_smarty->assign('count',$count);
+        $this->ci_smarty->assign('search', $data);
+        $this->ci_smarty->display('member/searchMember.tpl');
+    }
+
     public function memberInfo()
     {
         $id      = $this->input->get('id');
+        $watch   = $this->input->get('watch');
         $data    = $this->MemberModel->getMemberInfo($id);
         $comment = $this->MemberModel->getCommentList($id);
+        // $customStatus = $data['customStatus'] == 1 ? [] : $this->getCustomStatus($data['customLevel'],['customStatus' =>$data['customStatus']]);
+        $customStatus = $data['customStatus'] == 1 ? [] : $this->getCustomStatus($data['customLevel']);
+        // echo '<pre>';print_r($customStatus);die;
+        $this->ci_smarty->assign('watch', $watch);
         $this->ci_smarty->assign('data', $data);
         $this->ci_smarty->assign('comment', $comment);
         $this->ci_smarty->assign('payType', $this->MemberModel->getValue('payType'));
         $this->ci_smarty->assign('customLevel', $this->MemberModel->getValue('customLevel'));
-        $this->ci_smarty->assign('customStatus', $this->MemberModel->getValue('customStatus'));
+        $this->ci_smarty->assign('customStatus', $customStatus);
         $this->ci_smarty->assign('callType', $this->MemberModel->getValue('callType'));
         $this->ci_smarty->display('member/memberInfo.tpl');
     }
@@ -177,8 +208,8 @@ class Member extends MY_Controller
         if (!empty($data['ids'])) {
             $whereIn = ['a.id' => explode(',',trim($data['ids'],','))];
         }
-        $list = $this->MemberModel->getMemberList(1,1999,$condition,$whereIn);
-        // D($list);
+        $list = $this->MemberModel->getMemberList(1,9999,$condition,$whereIn);
+        // D($listt);
         if (empty($list)) {
             echo '未查到符合条件的数据';return;
         }
@@ -210,25 +241,68 @@ class Member extends MY_Controller
     {
         $data = $this->input->post();
         if ($data) {
-            $this->session->set_userdata('memberList', $data);
+            $this->session->set_userdata('rubbishList', $data);
         } else {
-            $data = $this->session->userdata('memberList');
+            $data = $this->session->userdata('rubbishList');
         }
-        $condition = ['a.isShow' => 2];
+        // echo '<pre>';print_r($this->userinfo);die;
+        $condition = ['a.isShow' => 1];
+        $whereOr   = [];
+        if (!empty($data['dataLevel'])) {
+            $condition['dataLevel'] = $data['dataLevel'];
+        }
+        if (!empty($data['firstOwer'])) {
+            $condition['firstOwer'] = $data['firstOwer'];
+        }
+        if (!empty($data['source'])) {
+            $condition['source'] = $data['source'];
+        }
+        if (!empty($data['customLevel'])) {
+            $condition['customLevel'] = $data['customLevel'];
+        }
+        if (!empty($data['t']) && $data['t'] == 1) {
+            $condition['meetTime >='] = date('Y-m-d');
+            $condition['meetTime <='] = date('Y-m-d',strtotime('+1 day'));
+        }
+        if (!empty($data['t']) && $data['t'] == 2) {
+            $condition['a.give_time >='] = date('Y-m-d');
+            $condition['a.give_time <='] = date('Y-m-d',strtotime('+1 day'));
+        }
+        if (!empty($data['t']) && $data['t'] == 3) {
+            $whereOr['callType'] = 1;
+            // $condition['meetTime'] = '0000-00-00 00:00:00';
+            $whereOr['isAllot'] = 2;
+            // $condition['id >'] = '0 AND (callType = 1 OR isAllot = 2)';
+        }
         if (!empty($data['bt'])) {
-            $condition['a.update >='] = $data['bt'];
+            $condition['meetTime >='] = $data['bt'];
         }
         if (!empty($data['et'])) {
-            $condition['a.update <='] = $data['et'] . ' 23:59:59';
+            $condition['meetTime <='] = $data['et'] . ' 23:59:59';
+        }
+        if (!empty($data['spt'])) {
+            $condition['a.created >='] = $data['spt'];
+        }
+        if (!empty($data['ept'])) {
+            $condition['a.created <='] = $data['ept'] . ' 23:59:59';
+        }
+        if (!empty($data['sct'])) {
+            $condition['a.updated >='] = $data['sct'];
+        }
+        if (!empty($data['ect'])) {
+            $condition['a.updated <='] = $data['ect'] . ' 23:59:59';
         }
         if (!empty($data['content'])) {
-            $condition['CONCAT(a.name,a.mobile) like'] = "%{$data['content']}%";
+            $condition['CONCAT(a.name,a.mobile,a.city,a.source) like'] = "%{$data['content']}%";
         }
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
-        $list  = $this->MemberModel->getMemberList($page,$size,$condition);
-        $count = $this->MemberModel->getMemberCount($condition);
-        // print_r($roles);die;
+        $list  = $this->MemberModel->getMemberList($page,$size,$condition,$whereOr);
+        $count = $this->MemberModel->getMemberCount($condition,$whereOr);
+        $users = $this->MemberModel->getUser();
+        // print_r($list);die;
+        $this->ci_smarty->assign('source',$this->MemberModel->getSource());
+        $this->ci_smarty->assign('users',$users);
         $this->ci_smarty->assign('list',$list);
         $this->ci_smarty->assign('count',$count);
         $this->ci_smarty->assign('search', $data);
@@ -296,21 +370,21 @@ class Member extends MY_Controller
             $insert[] = [
                 'name'           => $v[0],
                 'mobile'         => $v[1],
-                'city'           => $v[2],
-                'sex'            => $v[3] == '男' ? 1 : 2,
-                'age'            => $v[4],
-                'daiMoney'       => $v[5],
-                'haveCredit'     => $v[6] == '有' ? 2 : 1,
-                'hourseDai'      => $v[7] == '有' ? 2 : 1,
-                'carDai'         => $v[8] == '有' ? 2 : 1,
-                'occapation'     => $v[9],
+                'city'           => !empty($v[2]) ? $v[2] : '无',
+                'sex'            => !empty($v[3]) && $v[3] == '男' ? 1 : 2,
+                'age'            => !empty($v[4]) ? $v[4] : 0,
+                'daiMoney'       => !empty($v[5]) ? $v[5] : '',
+                'haveCredit'     => !empty($v[6]) && $v[6] == '有' ? 2 : 1,
+                'hourseDai'      => !empty($v[7]) && $v[7] == '有' ? 2 : 1,
+                'carDai'         => !empty($v[8]) && $v[8] == '有' ? 2 : 1,
+                'occapation'     => !empty($v[9]) ? $v[9] : '',
                 'payType'        => !empty($payType[$v[10]]) ? $payType[$v[10]] : 1,
-                'income'         => $v[11],
-                'reservedFunds'  => $v[12] == '有' ? 2 : 1,
-                'socialSecurity' => $v[13] == '有' ? 2 : 1,
-                'daiTime'        => $v[14],
-                'dataLevel'      => $v[15],
-                'source'         => $v[16],
+                'income'         => !empty($v[11]) ? $v[11] :'',
+                'reservedFunds'  => !empty($v[12]) && $v[12] == '有' ? 2 : 1,
+                'socialSecurity' => !empty($v[13]) && $v[13] == '有' ? 2 : 1,
+                'daiTime'        => !empty($v[14]) ? $v[14] : '',
+                'dataLevel'      => !empty($v[15]) ? $v[15] : 'C',
+                'source'         => !empty($v[16]) ? $v[16] : '',
                 'firstOwer'      => '',
             ];
         }
@@ -327,7 +401,11 @@ class Member extends MY_Controller
         }
         // D($insert);
         $this->db->insert_batch('md_custom_list',$insert);
-        // $this->db->where_in('mobile',$mobile)->update('md_custom_list',['isRepeat' => 2]);
+        $sql = "update `md_custom_list` b
+            join (select count(*) as tot,mobile from `md_custom_list` where isShow = 1 group by mobile) as a
+            on a.mobile = b.mobile
+            set isRepeat = 2 WHERE a.tot > 1";
+        $this->db->query($sql);
         // print_r($insert);die;
         $this->CommonModel->ajaxReturn(200,'上传成功'.count($insert).'条','dataUpload',false);
     }
@@ -377,7 +455,7 @@ class Member extends MY_Controller
             $condition['a.uid'] = $data['uid'] . ' 23:59:59';
         }
         if (!empty($data['content'])) {
-            $condition['CONCAT(a.username,a.mobile) like'] = "%{$data['content']}%";
+            $condition['CONCAT(a.username,a.mobile,b.city) like'] = "%{$data['content']}%";
         }
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
@@ -432,6 +510,105 @@ class Member extends MY_Controller
         } else {
             $this->CommonModel->ajaxReturn($result['errcode'],$result['errmsg'],'',false);
         }
+    }
+
+    public function checkOrderListExport()
+    {
+        $data = $this->input->get();
+        // echo '<pre>';print_r($this->userinfo);die;
+        $condition = [];
+        if (!empty($data['status'])) {
+            $condition['a.status'] = $data['status'];
+        }
+        if (!empty($data['bt'])) {
+            $condition['a.created >='] = $data['bt'];
+        }
+        if (!empty($data['et'])) {
+            $condition['a.created <='] = $data['et'] . ' 23:59:59';
+        }
+        if (!empty($data['uid'])) {
+            $condition['a.uid'] = $data['uid'] . ' 23:59:59';
+        }
+        if (!empty($data['content'])) {
+            $condition['CONCAT(a.username,a.mobile,b.city) like'] = "%{$data['content']}%";
+        }
+        $list  = $this->MemberModel->getOrderList(1,999,$condition);
+        // echo '<pre>';print_r($list);die;
+        if (empty($list)) {
+            echo '未查到符合条件的数据';return;
+        }
+        $header = array(
+            'username'    => '姓名',
+            'mobile'      => '手机',
+            'channel'     => '进件渠道',
+            'product'     => '贷款产品',
+            'money'       => '贷款额度',
+            'rate'        => '费率',
+            'deposit'     => '定金',
+            'firstName'   => '业务员',
+            'secondUid'   => '后勤对接员',
+            'isBackMoney' => '退定金?',
+            'sendMoney'   => '批款额度',
+            'income'      => '创收',
+            'sendTime'    => '收款时间',
+            'orderStatus' => '审核状态',
+            'created'     => '创建时间',
+            'team'        => '团长',
+            'area'        => '区长',
+        );
+        // echo '<pre>';print_r($data);die;
+        $filename = date('Y-m-d').'审件下载列表.xls';
+        $this->CommonModel->export($header, $list, $filename);
+    }
+
+    public function changeCustomStatus()
+    {
+        $customLevel = $this->input->get('customLevel');
+        $this->CommonModel->output($this->getCustomStatus($customLevel));
+    }
+
+    protected function getCustomStatus($customLevel,array $extendid = [])
+    {
+        $ids         = [];
+        switch ($customLevel) {
+            case 1:
+                $ids = [1];
+                break;
+            case 2:
+                $ids = [2];
+                break;
+            case 3:
+                $ids = [4];
+                break;
+            case 4:
+            case 5:
+            case 6:
+                $ids = [6,3,5,7,8,9];
+                break;
+            default:
+                $ids = [];
+                break;
+        }
+        $ids = array_merge($ids,$extendid);
+        $customStatus = $this->MemberModel->getValue('customStatus');
+        $result       = [];
+        foreach ($ids as $v) {
+            if (!empty($customStatus[$v])) {
+                $result[] = [
+                    'value' => $v,
+                    'label' => $customStatus[$v],
+                ];
+            }
+        }
+        // foreach ($customStatus as $k => $v) {
+        //     if (in_array($k,$ids)) {
+        //         $result[] = [
+        //             'value' => $k,
+        //             'label' => $v,
+        //         ];
+        //     }
+        // }
+        return $result;
     }
 
 }

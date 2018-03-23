@@ -238,6 +238,7 @@
     </script>
     <style type="text/css">
         .bjui-pageContent{padding: 0px}
+        /*body,td,th{font-size: 16px !important;}*/
     </style>
 </head>
 <body>
