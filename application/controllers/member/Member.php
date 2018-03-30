@@ -161,6 +161,7 @@ class Member extends MY_Controller
 
     public function memberDownload()
     {
+        ini_set('memory_limit', '256M');
         $data      = $this->input->get();
         $condition = ['a.isShow' => 1];
         $whereIn   = [];
@@ -169,6 +170,9 @@ class Member extends MY_Controller
         }
         if (!empty($data['firstOwer'])) {
             $condition['firstOwer'] = $data['firstOwer'];
+        }
+        if (!empty($data['source'])) {
+            $condition['source'] = $data['source'];
         }
         if (!empty($data['customLevel'])) {
             $condition['customLevel'] = $data['customLevel'];
@@ -208,7 +212,7 @@ class Member extends MY_Controller
         if (!empty($data['ids'])) {
             $whereIn = ['a.id' => explode(',',trim($data['ids'],','))];
         }
-        $list = $this->MemberModel->getMemberList(1,9999,$condition,$whereIn);
+        $list = $this->MemberModel->getMemberList(1,2999,$condition,$whereIn);
         // D($listt);
         if (empty($list)) {
             echo '未查到符合条件的数据';return;
@@ -231,6 +235,8 @@ class Member extends MY_Controller
             'customStatus'   => '用户状态',
             'dataLevel'      => '数据类型',
             'customLevel'    => '名单星级',
+            'callTypeName'   => '通话记录',
+            'source'         => '来源',
         );
         // echo '<pre>';print_r($data);die;
         $filename = date('Y-m-d').'客户下载列表.xls';
@@ -246,7 +252,7 @@ class Member extends MY_Controller
             $data = $this->session->userdata('rubbishList');
         }
         // echo '<pre>';print_r($this->userinfo);die;
-        $condition = ['a.isShow' => 1];
+        $condition = ['a.isShow' => 2];
         $whereOr   = [];
         if (!empty($data['dataLevel'])) {
             $condition['dataLevel'] = $data['dataLevel'];

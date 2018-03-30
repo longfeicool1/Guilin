@@ -573,7 +573,7 @@ td[align=right] input{text-align:right;}
 #bjui-contextmenu li.diver:hover{background:transparent !important; cursor:default;}
 #bjui-contextmenuShadow{position:absolute; z-index:999; display:none; opacity:0.2; filter:alpha(opacity=20); background-color:#000; border-radius:4px;}
 /* Calendar */
-#bjui-calendar{position:absolute; z-index:1001; display:none; margin:0; width:208px; border-radius:2px;}
+#bjui-calendar{position:absolute; z-index:1001; display:none; margin:0; width:228px; border-radius:2px;}
 #bjui-calendar > .main{position:relative; margin:auto; padding:2px; text-align:center; background:#ffffff;}
 #bjui-calendar > .main > a.close{position:absolute; top:-12px; right:-10px; float:none; width:20px; height:20px; font-size:20px; opacity:1; filter:alpha(opacity=100);}
 #bjui-calendar > .main > .head > table .prev,
@@ -591,7 +591,7 @@ td[align=right] input{text-align:right;}
 #bjui-calendar > .main > .foot > .time td{line-height:21px; vertical-align:center;}
 #bjui-calendar > .main > .foot > .time .hh,
 #bjui-calendar > .main > .foot > .time .mm,
-#bjui-calendar > .main > .foot > .time .ss{padding:0; width:18px; height:21px; font-size:16px; text-align:center; border:none;}
+#bjui-calendar > .main > .foot > .time .ss{padding:0; width:20px; height:21px; font-size:16px; text-align:center; border:none;}
 #bjui-calendar > .main > .foot > .time .form-control{-webkit-box-shadow:none; box-shadow:none;}
 #bjui-calendar > .main > .foot > .time .up,
 #bjui-calendar > .main > .foot > .time .down{height:11px; font-size:8pt; line-height:100%; cursor:pointer;}

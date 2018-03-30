@@ -71,8 +71,9 @@ class MemberModel extends MY_Model
     ];
 
     public $isBackMoney = [
-        1 => '未退',
-        2 => '已退',
+        1 => '未退款',
+        2 => '已退款',
+        3 => '转创收',
     ];
 
     public $orderStaus = [
@@ -139,6 +140,7 @@ class MemberModel extends MY_Model
             $result[$k]['xuhao']           = $n;
             $result[$k]['sex']             = $this->sex[$v['sex']];
             $result[$k]['payType']         = $this->payType[$v['payType']];
+            $result[$k]['callTypeName']    = $this->callType[$v['callType']];
             $result[$k]['socialSecurity']  = $this->socialSecurity[$v['socialSecurity']];
             $result[$k]['reservedFunds']   = $this->reservedFunds[$v['reservedFunds']];
             $result[$k]['haveHouse']       = $this->haveHouse[$v['haveHouse']];
