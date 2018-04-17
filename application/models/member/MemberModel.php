@@ -191,6 +191,14 @@ class MemberModel extends MY_Model
         return $result;
     }
 
+    public function getMemberInfoByMobile($mobile)
+    {
+        $result = $this->db
+            ->get_where('md_custom_list',['mobile' => $mobile])
+            ->row_array();
+        return $result;
+    }
+
     public function toUpdateInfo($id,$data)
     {
         // foreach ($data as $k => $v) {
@@ -261,6 +269,9 @@ class MemberModel extends MY_Model
 
     public function toCreateOrder($data)
     {
+        $data = array_map(function ($v){
+            return trim($v);
+        }, $data);
         if ($this->db->insert('md_check_order',$data)) {
             return ['errcode' => 200, 'errmsg' => '创建成功'];
         }
@@ -296,7 +307,7 @@ class MemberModel extends MY_Model
             $result[$k]['xuhao']      = $n;
             $result[$k]['orderStatus'] = $this->orderStaus[$v['status']];
             $result[$k]['isBackMoney'] = $this->isBackMoney[$v['isBackMoney']];
-            $result[$k]['sendTime'] = $v['sendTime'] == '0000-00-00 00:00:00' ? '暂无' : $v['sendTime'];
+            $result[$k]['sendTime'] = $v['sendTime'] == '0000-00-00' ? '暂无' : $v['sendTime'];
         }
         return $result;
     }

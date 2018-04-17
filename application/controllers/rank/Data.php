@@ -171,7 +171,7 @@ class Data extends MY_Controller
 
     public function downLoadCallData()
     {
-        $data = $this->input->post();
+        $data = $this->input->get();
         $condition = [];
         if (!empty($data['uid'])) {
             $condition['uid'] = $data['uid'];

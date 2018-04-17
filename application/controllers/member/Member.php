@@ -27,6 +27,9 @@ class Member extends MY_Controller
         if (!empty($data['firstOwer'])) {
             $condition['firstOwer'] = $data['firstOwer'];
         }
+        if (!empty($data['customStatus'])) {
+            $condition['customStatus'] = $data['customStatus'];
+        }
         if (!empty($data['source'])) {
             $condition['source'] = $data['source'];
         }
@@ -75,6 +78,7 @@ class Member extends MY_Controller
         $users = $this->MemberModel->getUser();
         // print_r($list);die;
         $this->ci_smarty->assign('source',$this->MemberModel->getSource());
+        $this->ci_smarty->assign('customStatus',$this->MemberModel->customStatus);
         $this->ci_smarty->assign('users',$users);
         $this->ci_smarty->assign('list',$list);
         $this->ci_smarty->assign('count',$count);
@@ -134,7 +138,7 @@ class Member extends MY_Controller
         if ($data['callType'] == 1) {
             $this->CommonModel->ajaxReturn(300,'请选择通话记录！','',false);
         }
-        if ($data['customStatus'] == 1) {
+        if (empty($data['customStatus']) || $data['customStatus'] == 1) {
             $this->CommonModel->ajaxReturn(300,'请选择名单状态！','',false);
         }
         if ($data['customLevel'] == 1) {
@@ -217,6 +221,9 @@ class Member extends MY_Controller
         if (empty($list)) {
             echo '未查到符合条件的数据';return;
         }
+        // foreach ($list as $k => $v) {
+        //     $list[$k]['lastComment'] = preg_replace("/[\s]/",'',$v['lastComment']);
+        // }
         $header = array(
             'name'           => '姓名',
             'sex'            => '性别',
@@ -237,6 +244,7 @@ class Member extends MY_Controller
             'customLevel'    => '名单星级',
             'callTypeName'   => '通话记录',
             'source'         => '来源',
+            'lastComment'    => '最后备注内容',
         );
         // echo '<pre>';print_r($data);die;
         $filename = date('Y-m-d').'客户下载列表.xls';
@@ -408,9 +416,9 @@ class Member extends MY_Controller
         // D($insert);
         $this->db->insert_batch('md_custom_list',$insert);
         $sql = "update `md_custom_list` b
-            join (select count(*) as tot,mobile from `md_custom_list` where isShow = 1 group by mobile) as a
+            join (select count(*) as tot,mobile,secOwer from `md_custom_list` where isShow = 1 group by mobile) as a
             on a.mobile = b.mobile
-            set isRepeat = 2 WHERE a.tot > 1";
+            set isRepeat = 2,b.secOwer = a.secOwer WHERE a.tot > 1";
         $this->db->query($sql);
         // print_r($insert);die;
         $this->CommonModel->ajaxReturn(200,'上传成功'.count($insert).'条','dataUpload',false);
@@ -425,6 +433,13 @@ class Member extends MY_Controller
         }
         $this->ci_smarty->assign('id', $id);
         $this->ci_smarty->display('member/createCheckOrder.tpl');
+    }
+
+    public function customInfo()
+    {
+        $mobile = $this->input->get('mobile');
+        $data   = $this->MemberModel->getMemberInfoByMobile(trim($mobile));
+        $this->CommonModel->output($data);
     }
 
     public function toCreateOrder()
@@ -456,6 +471,12 @@ class Member extends MY_Controller
         }
         if (!empty($data['et'])) {
             $condition['a.created <='] = $data['et'] . ' 23:59:59';
+        }
+        if (!empty($data['sendSart'])) {
+            $condition['a.sendTime >='] = $data['sendSart'];
+        }
+        if (!empty($data['sendEnd'])) {
+            $condition['a.sendTime <='] = $data['sendEnd'] . ' 23:59:59';
         }
         if (!empty($data['uid'])) {
             $condition['a.uid'] = $data['uid'] . ' 23:59:59';
@@ -532,6 +553,12 @@ class Member extends MY_Controller
         if (!empty($data['et'])) {
             $condition['a.created <='] = $data['et'] . ' 23:59:59';
         }
+        if (!empty($data['sendSart'])) {
+            $condition['a.sendTime >='] = $data['sendSart'];
+        }
+        if (!empty($data['sendEnd'])) {
+            $condition['a.sendTime <='] = $data['sendEnd'] . ' 23:59:59';
+        }
         if (!empty($data['uid'])) {
             $condition['a.uid'] = $data['uid'] . ' 23:59:59';
         }
@@ -546,6 +573,8 @@ class Member extends MY_Controller
         $header = array(
             'username'    => '姓名',
             'mobile'      => '手机',
+            'city'        => '城市',
+            'source'      => '来源',
             'channel'     => '进件渠道',
             'product'     => '贷款产品',
             'money'       => '贷款额度',

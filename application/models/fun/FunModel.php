@@ -111,7 +111,7 @@ class FunModel extends MY_Model
         // D($lastUsers);
 
         foreach ($allReturn as $uid => $customIds) {
-            $this->db->where_in('id',$customIds)->update('md_custom_list',['firstOwer' => $uid,'give_time' => date('Y-m-d H:i:s')]);
+            $this->db->where_in('id',$customIds)->update('md_custom_list',['firstOwer' => $uid,'secOwer' => $uid,'give_time' => date('Y-m-d H:i:s')]);
         }
 
         //获取用户姓名
@@ -211,11 +211,15 @@ class FunModel extends MY_Model
 
     public function toReallot($data)
     {
-        $ids    = explode(',',trim($data['ids'], ','));
+        $idstr  = trim($data['ids'], ',');
+        $ids    = explode(',',$idstr);
+        $sql = "UPDATE md_custom_list SET secOwer =  firstOwer WHERE FIND_IN_SET(id,?)";
+        $this->db->query($sql,$idstr);
         $update = ['firstOwer' => $data['firstOwer'],'isAllot' => 2];
         if ($data['meetTime']) {
             $update['meetTime'] = $data['meetTime'];
         }
+
         if ($this->db->where_in('id',$ids)->update('md_custom_list', $update) !== false) {
             return ['errcode' => 200,'errmsg'=> '重分配成功'];
         }

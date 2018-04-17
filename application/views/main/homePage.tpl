@@ -56,6 +56,15 @@
             </div>
         </div>
     </div> -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class=" alert alert-success" style="margin:0 0 5px;padding:5 15px;">
+            <p>欢迎你!</p>
+            <p>账号: {{$userinfo['username']}}</p>
+            <p>新的一天需要更加努力~~</p>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="bjui-pageFooter" style="text-align: center">
 </div>

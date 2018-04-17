@@ -5,14 +5,26 @@
     <table class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
         <tr>
             <td>
+                <label for="mobile" class="control-label x90">手机号码：</label>
+                <input type="text" name="mobile" value="{{$data['mobile']}}" class="form-control"  {{if !checkAuth(184)}}disabled{{/if}}>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <label for="username" class="control-label x90">姓名：</label>
                 <input type="text" name="username" value="{{$data['username']}}" class="form-control" {{if !checkAuth(183)}}disabled{{/if}}>
             </td>
         </tr>
         <tr>
             <td>
-                <label for="mobile" class="control-label x90">手机号码：</label>
-                <input type="text" name="mobile" value="{{$data['mobile']}}" class="form-control"  {{if !checkAuth(184)}}disabled{{/if}}>
+                <label for="city" class="control-label x90">城市：</label>
+                <input type="text" name="city" value="{{$data['city']}}" class="form-control">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="source" class="control-label x90">来源：</label>
+                <input type="text" name="source" value="{{$data['source']}}" class="form-control">
             </td>
         </tr>
         <tr>

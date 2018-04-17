@@ -6,12 +6,23 @@
     <table class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
         <tr>
             <td>
+                <label for="mobile" class="control-label x90">手机号码：</label>
+                <input type="text" name="mobile" data-rule="required;mobile;" value="{{if !empty($data) && $data['mobile']}}{{$data['mobile']}}{{/if}}" class="form-control">
+                <a href="javascript:;" onclick="FillCustomInfo(this);" class="btn btn-green">检测</a>
+            </td>
+            <td>
                 <label for="username" class="control-label x90">姓名：</label>
                 <input type="text" name="username" id="username" data-rule="required;" value="{{if !empty($data) && $data['name']}}{{$data['name']}}{{/if}}" class="form-control">
             </td>
+        </tr>
+        <tr>
             <td>
-                <label for="mobile" class="control-label x90">手机号码：</label>
-                <input type="text" name="mobile" data-rule="required;mobile;" value="{{if !empty($data) && $data['mobile']}}{{$data['mobile']}}{{/if}}" class="form-control">
+                <label for="city" class="control-label x90">城市：</label>
+                <input type="text" name="city" data-rule="required;" value="" class="form-control">
+            </td>
+            <td>
+                <label for="source" class="control-label x90">来源：</label>
+                <input type="text" name="source" data-rule="required;" value="" class="form-control">
             </td>
         </tr>
         <tr>
@@ -76,3 +87,22 @@
         </li>
     </ul>
 </div>
+<script type="text/javascript">
+    function FillCustomInfo(obj)
+    {
+        var mobile = $('input[name=mobile]').val();
+        if (!mobile) {
+            $(document).alertmsg('error','请填写完整的手机号');
+            return null;
+        };
+        $.get('/member/member/customInfo',{'mobile':mobile},function (reponse){
+            if (reponse) {
+                $('input[name=city]').val(reponse.city)
+                $('input[name=source]').val(reponse.source)
+                $('input[name=username]').val(reponse.name)
+            } else {
+                $(document).alertmsg('error','为查询到该号码的相关信息');
+            }
+        })
+    }
+</script>

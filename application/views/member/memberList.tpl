@@ -37,6 +37,12 @@
                 <option value="5" {{if !empty($search['customLevel']) && $search['customLevel'] == 5}}selected{{/if}}>3星</option>
                 <option value="6" {{if !empty($search['customLevel']) && $search['customLevel'] == 6}}selected{{/if}}>4星</option>
             </select>
+            <select name="customStatus" data-toggle="selectpicker">
+                <option {{if empty($search['customStatus'])}}selected{{/if}} value="">--用户状态--</option>
+                {{foreach $customStatus as $k=>$v}}
+                <option {{if !empty($search['customStatus']) && $search['customStatus'] == $k}}selected{{/if}} value="{{$k}}">{{$v}}</option>
+                {{/foreach}}
+            </select>
             <select name="firstOwer" id="firstOwer" data-toggle="selectpicker">
                 <option {{if empty($search['firstOwer'])}}selected{{/if}} value="">--业务员--</option>
                 {{foreach $users as $v}}

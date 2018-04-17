@@ -26,7 +26,9 @@ class CommonModel extends MY_Model {
             $n ++;
             $table .= "{$n}\t";
             foreach ($header as $k => $v) {
-                $table .= "{$row[$k]}\t";
+                // $val = trim($row[$k]);
+                $val = preg_replace("/[\s]/",'',$row[$k]);
+                $table .= "{$val}\t";
             }
             $table .= "\n";
         }

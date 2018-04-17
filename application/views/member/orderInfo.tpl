@@ -9,14 +9,26 @@
     <table class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
         <tr>
             <td>
+                <label for="mobile" class="control-label x90">手机号码：</label>
+                <span>{{$data['mobile']}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <label for="username" class="control-label x90">姓名：</label>
                 <span>{{$data['username']}}</span>
             </td>
         </tr>
         <tr>
             <td>
-                <label for="mobile" class="control-label x90">手机号码：</label>
-                <span>{{$data['mobile']}}</span>
+                <label for="username" class="control-label x90">城市：</label>
+                <span>{{$data['city']}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="username" class="control-label x90">来源：</label>
+                <span>{{$data['source']}}</span>
             </td>
         </tr>
         <tr>

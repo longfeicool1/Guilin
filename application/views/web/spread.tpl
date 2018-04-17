@@ -24,7 +24,7 @@
        }
        .flex-wrapper{display: flex;justify-content: space-between;font-size: 0.6rem;padding-bottom: 1rem}
        .fensi{color:#1681c0 ;padding-right: 1rem}
-       .page_list{background: url(/static/web/spread/ban.jpg) no-repeat;height: 9rem;background-size: 100% 100%}
+       .page_list{background: url(/static/web/spread/WechatIMG396.jpeg) no-repeat;height: 9rem;background-size: 100% 100%}
        .blueColor{color:#1681c0;padding-left: .2rem }
 
        .page-list-item{
@@ -33,7 +33,7 @@
         .flex-item{display: flex;padding-top: .3rem}
       .cell{flex:1;}
       .cell img{width: 100%}
-      .text-cen{text-align: center;padding: 1rem;font-size: 1.1rem}
+      .text-cen{text-align: center;padding: 1rem;font-size: 1rem}
       .search-input{width: 95%;margin:1rem auto;}
       input::-webkit-input-placeholder { color: #ccc}
       .yuan{
@@ -118,9 +118,11 @@
                   <span>本人已阅读并同意</span>
                   <span style="color: #0894ec" data-popup=".popup-about" class="open-popup">《特贷网平台服务协议》</span>
                </div>
+               <p style="font-size: 12px;margin: 1em;">投资有风险，投资需谨慎；审批额度、到账时间视个人情况而定贷款资金由银行等持牌放贷机构提供。</p>
              </form>
-             <div class="text-cen">合作平台</div>
-             <div style="display: flex;">
+             <!-- <div class="text-cen">提醒</div> -->
+             <!-- <div class="text-cen">合作平台</div> -->
+<!--              <div style="display: flex;">
                <div class="cell cell-3">
                  <img src="/static/web/spread/ping.jpg" alt="">
                </div>
@@ -136,6 +138,14 @@
                <div class="cell cell-3">
                  <img src="/static/web/spread/you.jpg" alt="">
                </div>
+             </div> -->
+             <style type="text/css">
+                .tip{margin: 0em;font-size: 16px}
+                .tip p{margin: 0.5em 10px !important; text-align: center;}
+             </style>
+             <div class="tip">
+              <!-- <p>杜绝借款犯罪</p><p>倡导合法借贷</p><p>信守借贷合约</p> -->
+              <p style="text-align: right;font-size: 12px">深圳享帮帮投资咨询有限公司&nbsp;粤ICP备17072379号-1</p>
              </div>
           </div>
           <!--  -->

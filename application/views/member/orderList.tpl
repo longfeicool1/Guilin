@@ -7,28 +7,36 @@
         <div class="bjui-searchBar">
             <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['bt'])}}{{$search['bt']}}{{/if}}" name="bt" autocomplete="off"
-                       placeholder="创建时间开始"/>
+                       placeholder="审件创建时间"/> ~
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
-                   name="et" autocomplete="off" placeholder="创建时间结束"/>
-            <select name="status" id="status" data-toggle="selectpicker">
-                <option {{if empty($search['status'])}}selected{{/if}} value="">--审核状态--</option>
-                <option value="1" {{if !empty($search['status']) && $search['status'] == 1}}selected{{/if}}>待审核</option>
-                <option value="2" {{if !empty($search['status']) && $search['status'] == 2}}selected{{/if}}>在审中</option>
-                <option value="3" {{if !empty($search['status']) && $search['status'] == 3}}selected{{/if}}>已拒款</option>
-                <option value="4" {{if !empty($search['status']) && $search['status'] == 4}}selected{{/if}}>客户已拒签</option>
-                <option value="5" {{if !empty($search['status']) && $search['status'] == 5}}selected{{/if}}>未进件</option>
-                <option value="6" {{if !empty($search['status']) && $search['status'] == 6}}selected{{/if}}>已收款</option>
-            </select>
-            <select name="uid" id="uid" data-toggle="selectpicker">
-                <option {{if empty($search['uid'])}}selected{{/if}} value="">--业务员--</option>
-                {{foreach $users as $v}}
-                <option {{if !empty($search['uid']) && $search['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
-                {{/foreach}}
-            </select>
-            <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名、城市)">
-            <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
-            <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
+                   name="et" autocomplete="off" placeholder="审件创建时间"/>
+            <input data-toggle="datepicker" type="text"
+                       value="{{if isset($search['sendSart'])}}{{$search['sendSart']}}{{/if}}" name="sendSart" autocomplete="off"
+                       placeholder="收款时间"/> ~
+            <input data-toggle="datepicker" type="text"
+                   value="{{if isset($search['sendEnd'])}}{{$search['sendEnd']}}{{/if}}"
+                   name="sendEnd" autocomplete="off" placeholder="收款时间"/>
+            <div style="width: 100%;margin-top: 5px;">
+                <select name="status" id="status" data-toggle="selectpicker">
+                    <option {{if empty($search['status'])}}selected{{/if}} value="">--审核状态--</option>
+                    <option value="1" {{if !empty($search['status']) && $search['status'] == 1}}selected{{/if}}>待审核</option>
+                    <option value="2" {{if !empty($search['status']) && $search['status'] == 2}}selected{{/if}}>在审中</option>
+                    <option value="3" {{if !empty($search['status']) && $search['status'] == 3}}selected{{/if}}>已拒款</option>
+                    <option value="4" {{if !empty($search['status']) && $search['status'] == 4}}selected{{/if}}>客户已拒签</option>
+                    <option value="5" {{if !empty($search['status']) && $search['status'] == 5}}selected{{/if}}>未进件</option>
+                    <option value="6" {{if !empty($search['status']) && $search['status'] == 6}}selected{{/if}}>已收款</option>
+                </select>
+                <select name="uid" id="uid" data-toggle="selectpicker">
+                    <option {{if empty($search['uid'])}}selected{{/if}} value="">--业务员--</option>
+                    {{foreach $users as $v}}
+                    <option {{if !empty($search['uid']) && $search['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
+                    {{/foreach}}
+                </select>
+                <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名、城市)">
+                <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
+                <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
+            </div>
             <div style="margin-top: 5px">
                 <div class="pull-right">
                 {{if checkAuth(182)}}
