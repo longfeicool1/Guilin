@@ -213,8 +213,9 @@ class FunModel extends MY_Model
     {
         $idstr  = trim($data['ids'], ',');
         $ids    = explode(',',$idstr);
-        $sql = "UPDATE md_custom_list SET secOwer =  firstOwer WHERE FIND_IN_SET(id,?)";
-        $this->db->query($sql,$idstr);
+        // $sql = "UPDATE md_custom_list_copy2 SET secOwer =  firstOwer WHERE FIND_IN_SET(id,?) AND secOwer = 0";
+        // $this->db->query($sql,$idstr);
+        // D($this->db->last_query());
         $update = ['firstOwer' => $data['firstOwer'],'isAllot' => 2];
         if ($data['meetTime']) {
             $update['meetTime'] = $data['meetTime'];

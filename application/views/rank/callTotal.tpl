@@ -60,7 +60,7 @@
 
     function downloadTotal()
     {
-        params = $('.frm_member').serialize();
+        params = $('.frm_personal').serialize();
         var gourl = '/rank/data/downLoadCallData?' + params;
         window.open(gourl);
     }

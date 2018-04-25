@@ -227,12 +227,12 @@ class DataModel extends MY_Model
 
         // $users = array_column($users,'uid');
         if (!empty($this->uids)) {
-            $this->db->where_in('firstOwer',$this->uids);
+            $this->db->where_in('secOwer',$this->uids);
         }
         $rs1  = $this->db
-            ->select('count(*) as dayAllotCustom,firstOwer as uid')
-            ->where(['isShow' => 1,'firstOwer > '=>0])
-            ->group_by('firstOwer')
+            ->select('count(*) as dayAllotCustom,secOwer as uid')
+            ->where(['isShow' => 1,'secOwer > '=>0])
+            ->group_by('secOwer')
             ->get('md_custom_list')
             ->result_array();
         // D($this->db->last_query());
@@ -262,12 +262,12 @@ class DataModel extends MY_Model
         $startMonth = date('Y-m-01',strtotime('-1 day'));
         $endMonth   = date('Y-m-31',strtotime('-1 day'));
         if (!empty($this->uids)) {
-            $this->db->where_in('firstOwer',$this->uids);
+            $this->db->where_in('secOwer',$this->uids);
         }
         $rs3 = $this->db
-            ->select('count(*) as monthAllotCustom,firstOwer AS uid')
-            ->where(['give_time >=' => $startMonth,'give_time <=' => $endMonth])
-            ->group_by('firstOwer')
+            ->select('count(*) as monthAllotCustom,secOwer AS uid')
+            ->where(['give_time >=' => $startMonth,'give_time <=' => $endMonth,'isShow' => 1])
+            ->group_by('secOwer')
             ->get('md_custom_list')
             ->result_array();
         // D($this->db->last_query());

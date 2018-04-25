@@ -273,8 +273,8 @@
             id: 'reallot',
             url: '/fun/fun/reallot',
             title: '数据重分配',
-            width: 350,
-            height: 200,
+            width: 450,
+            height: 220,
             mask: true,
             data: {'ids': str}
         });
