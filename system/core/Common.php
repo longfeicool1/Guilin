@@ -467,45 +467,17 @@ if ( ! function_exists('log_message'))
 	 */
 	function log_message($level, $message)
 	{
-		// static $_log;
+		static $_log;
 
-		// if ($_log === NULL) {
-		// 	// references cannot be directly assigned to static variables, so we use an array
-		// 	$_log[0] =& load_class('Log', 'core');
-		// }
-
-		// $_log[0]->write_log($level, $message);
-		
-		static $_log, $_logNew;
-		
-		if (isset($_SERVER['HTTP_HOST']))
-		{
-			if ($_logNew === NULL)
-			{
-				// references cannot be directly assigned to static variables, so we use an array
-				// $_logNew[0] =& load_class('LogSender', 'libraries');
-				// $_logNew[0]->init();
-				// $CI =& get_instance();
-				require_once __dir__.'/../libraries/LogSender.php';
-				$_logNew[0] = new CI_LogSender();
-				$_logNew[0]->init();
-			}
-
-			$first = explode('.', $_SERVER['HTTP_HOST']);
-			$first = strtolower(current($first));
-			$rela = $_logNew[0]->getRelationship();
-			$cmd = isset($rela[$first]) ? $first : 'other';
-			if ($cmd == 'other')
-			{
-				$res = $_logNew[0]->coreWriter($cmd, $_SERVER['HTTP_HOST'], isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '', $level, $message);
-			}
-			else
-			{
-				$res = $_logNew[0]->coreWriter($cmd, isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '', $level, $message);
-			}
-
-			// print_r($res);
+		if ($_log === NULL) {
+			// references cannot be directly assigned to static variables, so we use an array
+			$_log[0] =& load_class('Log', 'core');
 		}
+
+		$_log[0]->write_log($level, $message);
+
+		// static $_log, $_logNew;
+
 		// if (isset($_SERVER['HTTP_HOST']))
 		// {
 		// 	if ($_logNew === NULL)
@@ -534,16 +506,44 @@ if ( ! function_exists('log_message'))
 
 		// 	// print_r($res);
 		// }
-		
-		// else
-		// {
-			if ($_log === NULL) 
-			{
-				// references cannot be directly assigned to static variables, so we use an array
-				$_log[0] =& load_class('Log', 'core');
-			}
+		// // if (isset($_SERVER['HTTP_HOST']))
+		// // {
+		// // 	if ($_logNew === NULL)
+		// // 	{
+		// // 		// references cannot be directly assigned to static variables, so we use an array
+		// // 		// $_logNew[0] =& load_class('LogSender', 'libraries');
+		// // 		// $_logNew[0]->init();
+		// // 		// $CI =& get_instance();
+		// // 		require_once __dir__.'/../libraries/LogSender.php';
+		// // 		$_logNew[0] = new CI_LogSender();
+		// // 		$_logNew[0]->init();
+		// // 	}
 
-			$_log[0]->write_log($level, $message);
+		// // 	$first = explode('.', $_SERVER['HTTP_HOST']);
+		// // 	$first = strtolower(current($first));
+		// // 	$rela = $_logNew[0]->getRelationship();
+		// // 	$cmd = isset($rela[$first]) ? $first : 'other';
+		// // 	if ($cmd == 'other')
+		// // 	{
+		// // 		$res = $_logNew[0]->coreWriter($cmd, $_SERVER['HTTP_HOST'], isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '', $level, $message);
+		// // 	}
+		// // 	else
+		// // 	{
+		// // 		$res = $_logNew[0]->coreWriter($cmd, isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '', $level, $message);
+		// // 	}
+
+		// // 	// print_r($res);
+		// // }
+
+		// // else
+		// // {
+		// 	if ($_log === NULL)
+		// 	{
+		// 		// references cannot be directly assigned to static variables, so we use an array
+		// 		$_log[0] =& load_class('Log', 'core');
+		// 	}
+
+		// 	$_log[0]->write_log($level, $message);
 		// }
 	}
 }

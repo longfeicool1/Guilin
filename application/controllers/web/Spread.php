@@ -39,7 +39,7 @@ class Spread extends CI_Controller
         if (strlen($data['mobile']) != 11 || !preg_match('/^1[3|4|5|7|8][0-9]\d{4,8}$/', $data['mobile'])) {
             $this->CommonModel->output(['errcode' => 300,'errmsg' => '请填写正确的手机号']);
         }
-        $rs = $this->db->get_where('md_custom_list',['isShow' => 1,'mobile' => $data['mobile']])->row_array();
+        $rs = $this->db->get_where('md_custom_list',['isShow' => 1,'mobile' => $data['mobile'],'created >' => date('Y-m-d',strtotime('-180 days'))])->row_array();
         if (!empty($rs)) {
             $this->CommonModel->output(['errcode' => 300,'errmsg' => '已提交过一次啦,请等待客服代表联系您']);
         }

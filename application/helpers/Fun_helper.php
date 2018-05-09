@@ -45,3 +45,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
         return false;
     }
+
+    // function debugInfo($level,$msg)
+    // {
+    //     return $this->db->insert('md_error_info',[
+    //         'level' => 'debug',
+    //         'msg'   => $msg,
+    //     ]);
+    // }

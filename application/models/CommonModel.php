@@ -261,4 +261,26 @@ class CommonModel extends MY_Model {
         }
         return $out;
     }
+
+    function sign($secrect, $data, $signFields = [])
+    {
+        ksort($data);
+        // 开始计算sign
+        $newData = [];
+        foreach ($data as $k => $v) {
+            if ($k == 'sign') {
+                continue;
+            }
+
+            if (empty($signFields) || in_array($k, $signFields)) {
+                $newData[] = is_array($v) ? json_encode($v) : trim($v);
+            }
+        }
+        $values = implode('', array_values($newData));
+        // print_r("values::{$values}".PHP_EOL);
+        // print_r("secrect::{$secrect}".PHP_EOL);
+        // print_r("sign::".md5(md5($values) . $secrect).PHP_EOL);
+        // die;
+        return md5(md5($values) . $secrect);
+    }
 }

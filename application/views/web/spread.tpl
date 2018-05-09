@@ -46,7 +46,10 @@
     </style>
     <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
     <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
-    <link rel="stylesheet" type="text/css" href="https://at.alicdn.com/t/font_453820_txzo78zwlv1gu8fr.css">
+    <link rel="stylesheet" type="text/css" href="https://at.alicdn.com/t/font_45320_txzo78zwlv1gu8fr.css">
+    <script type="text/javascript">
+    (function(w,d,t,s,q,m,n){if(w.utq)return;q=w.utq=function(){q.process?q.process(arguments):q.queue.push(arguments);};q.queue=[];m=d.getElementsByTagName(t)[0];n=d.createElement(t);n.src=s;n.async=true;m.parentNode.insertBefore(n,m);})(window,document,'script','https://image.uc.cn/s/uae/g/0s/ad/utracking.js');utq('set', 'convertMode', true);utq('set', 'trackurl', 'huichuan.sm.cn/lp');
+    </script>
   </head>
   <body>
     <div class="page-group">
@@ -112,7 +115,7 @@
                    </select>
                  </div>
               </div>
-               <p style="padding: 0 .5rem"><a href="#" id="submit" class="button button-fill" style="height: 2.25rem;line-height: 2.25rem;font-size: 1rem">提交</a></p>
+               <p style="padding: 0 .5rem"><a class="button button-fill" id="submit" style="height: 2.25rem;line-height: 2.25rem;font-size: 1rem">提交</a></p>
                <div style="display: flex;font-size: .5rem;padding-left: .5rem">
                   <input type="checkbox" id="isRead"  checked="checked"/>
                   <span>本人已阅读并同意</span>
@@ -375,5 +378,22 @@ $(function() {
     })
   });
 });
+
+//UC
+utq('track', 'FormSubmit', '55580');
+</script>
+
+
+<script type="text/javascript">
+  (function(root) {
+        window.logsMomoUserId="180502165014766";
+        var jsonpScript=document.createElement("script");
+        jsonpScript.type="text/javascript";
+        jsonpScript.src="https://s.momocdn.com/w/u/others/custom/conver/mycustom/converjsonp.js?r="+Math.ceil(Math.random()*10);
+        var heads = document.getElementsByTagName('script')[0];
+        heads.parentNode.insertBefore(jsonpScript, heads);
+  })(window);
+  //momo
+  window.sendLosMeth&& window.sendLosMeth("submit");
 </script>
 

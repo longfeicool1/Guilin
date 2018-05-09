@@ -8,9 +8,11 @@
                        placeholder="查看日期"/>
             <select name="uid" id="uid" data-toggle="selectpicker">
                 <option {{if empty($search['uid'])}}selected{{/if}} value="">--业务员--</option>
+                {{if !empty($users)}}
                 {{foreach $users as $v}}
                 <option {{if !empty($search['uid']) && $search['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
                 {{/foreach}}
+                {{/if}}
             </select>
 
             <!-- <input type="text" value="{{if !empty($search['name'])}}{{$search['name']}}{{/if}}" name="name" class="form-control" placeholder="搜索(姓名)"> -->
