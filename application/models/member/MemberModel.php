@@ -103,7 +103,7 @@ class MemberModel extends MY_Model
         if (!empty($this->uids)) {
             $this->db->where_in('uid',$this->uids);
         }
-        $result = $this->db->get_where('md_user',['position >=' => 3])->result_array();
+        $result = $this->db->get_where('md_user',['position >=' => 3,'is_show' => 1])->result_array();
         return $result;
     }
 

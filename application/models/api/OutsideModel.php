@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class OutsideModel extends MY_Model
 {
-    protected static $appid = [
+    protected $appid = [
         'JLX','GF'
     ];
     public function insertCustom($insert)
