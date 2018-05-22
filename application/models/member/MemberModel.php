@@ -139,7 +139,7 @@ class MemberModel extends MY_Model
             $n++;
             $result[$k]['xuhao']           = $n;
             $result[$k]['sex']             = $this->sex[$v['sex']];
-            $result[$k]['payType']         = $this->payType[$v['payType']];
+            $result[$k]['payType']         = !empty($this->payType[$v['payType']]) ? $this->payType[$v['payType']] : '';
             $result[$k]['callTypeName']    = $this->callType[$v['callType']];
             $result[$k]['socialSecurity']  = $this->socialSecurity[$v['socialSecurity']];
             $result[$k]['reservedFunds']   = $this->reservedFunds[$v['reservedFunds']];
@@ -219,7 +219,7 @@ class MemberModel extends MY_Model
         }
         // D($data);
         $data['isAllot'] = 1;
-
+        $data['updated'] = date('Y-m-d H:i:s');
         if ($this->db->update('md_custom_list',$data,['id' => $id]) !== false) {
             return ['errcode' => 200, 'errmsg' => '更新成功'];
         }

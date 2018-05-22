@@ -59,8 +59,6 @@
             var heads = document.getElementsByTagName('script')[0];
             heads.parentNode.insertBefore(jsonpScript, heads);
       })(window);
-      //momo
-      window.sendLosMeth&& window.sendLosMeth("submit");
     </script>
   </head>
   <body>
@@ -383,6 +381,10 @@ $(function() {
         alert(res.errmsg)
         return
       }
+      //UC
+      utq('track', 'FormSubmit', '55580');
+      //momo
+      window.sendLosMeth&& window.sendLosMeth("submit");
       name     = $('input[name=name]').val('');
       mobile   = $('input[name=mobile]').val('');
       daiMoney = $('input[name=daiMoney]').val('');
@@ -390,9 +392,6 @@ $(function() {
     })
   });
 });
-
-//UC
-utq('track', 'FormSubmit', '55580');
 </script>
 
 
