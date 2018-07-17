@@ -61,7 +61,16 @@
         <tr>
             <td>
                 <label for="uid" class="control-label x90">业务员：</label>
+                {{if checkAuth(191)}}
+                <select name="uid" id="uid" data-toggle="selectpicker">
+                    <option {{if empty($data['uid'])}}selected{{/if}} value="">--业务员--</option>
+                    {{foreach $users as $v}}
+                    <option {{if !empty($data['uid']) && $data['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
+                    {{/foreach}}
+                </select>
+                {{else}}
                 <span>{{$data['firstName']}}</span>
+                {{/if}}
             </td>
         </tr>
         <tr>

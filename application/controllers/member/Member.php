@@ -24,12 +24,16 @@ class Member extends MY_Controller
         if (!empty($data['dataLevel'])) {
             $condition['dataLevel'] = $data['dataLevel'];
         }
+        if (!empty($data['tag'])) {
+            $data['firstOwer']      = $data['tag'];
+        }
         if (!empty($data['firstOwer'])) {
             $condition['firstOwer'] = $data['firstOwer'];
         }
         if (!empty($data['customStatus'])) {
             $condition['customStatus'] = $data['customStatus'];
         }
+        // D($data);
         if (!empty($data['source'])) {
             $condition['source'] = $data['source'];
         }
@@ -46,9 +50,11 @@ class Member extends MY_Controller
         }
         if (!empty($data['t']) && $data['t'] == 3) {
             $whereOr['callType'] = 1;
-            // $condition['meetTime'] = '0000-00-00 00:00:00';
             $whereOr['isAllot'] = 2;
-            // $condition['id >'] = '0 AND (callType = 1 OR isAllot = 2)';
+            $condition['firstOwer != '] = 57;
+            $condition['secOwer != '] = 57;
+            $condition['firstOwer!='] = 109;
+            $condition['secOwer!='] = 109;
         }
         if (!empty($data['bt'])) {
             $condition['meetTime >='] = $data['bt'];
@@ -59,8 +65,9 @@ class Member extends MY_Controller
         if (!empty($data['spt'])) {
             $condition['a.created >='] = $data['spt'];
         }
+
         if (!empty($data['ept'])) {
-            $condition['a.created <='] = $data['ept'] . ' 23:59:59';
+            $condition['a.created <='] =  preg_replace("/[^\d-]/",'',$data['ept']) . ' 23:59:59';
         }
         if (!empty($data['sct'])) {
             $condition['a.updated >='] = $data['sct'];
@@ -74,9 +81,28 @@ class Member extends MY_Controller
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
         $list  = $this->MemberModel->getMemberList($page,$size,$condition,$whereOr);
+        // print_r($this->db->last_query());die;
         $count = $this->MemberModel->getMemberCount($condition,$whereOr);
         $users = $this->MemberModel->getUser();
+        $new   = $this->MemberModel->getMemberCount([
+            'a.isShow'        => 1,
+            'customLevel'     => 1,
+            'a.give_time >='  => date('Y-m-d'),
+            'a.give_time <= ' => date('Y-m-d',strtotime('+1 day')),],'');
+        //$condition['firstOwer != '] = 57;
+            $condition['secOwer != '] = 57;
+            $condition['firstOwer!='] = 109;
+            $condition['secOwer!='] = 109;
+        $old   = $this->MemberModel->getMemberCount([
+            'a.isShow'      => 1,
+            'firstOwer != ' => 57,
+            'secOwer != '   => 57,
+            'firstOwer!='   => 109,
+            'secOwer!='     => 109,
+            ],['callType'   => 1, 'isAllot' => 2]);
         // print_r($list);die;
+        $this->ci_smarty->assign('new',$new);
+        $this->ci_smarty->assign('old',$old);
         $this->ci_smarty->assign('source',$this->MemberModel->getSource());
         $this->ci_smarty->assign('customStatus',$this->MemberModel->customStatus);
         $this->ci_smarty->assign('users',$users);
@@ -84,6 +110,13 @@ class Member extends MY_Controller
         $this->ci_smarty->assign('count',$count);
         $this->ci_smarty->assign('search', $data);
         $this->ci_smarty->display('member/memberList.tpl');
+    }
+
+    public function searchUser()
+    {
+        $word    = $this->input->get('term');
+        $users = $this->MemberModel->autoGetUser(['name like' => "%{$word}%"]);
+        $this->CommonModel->output($users);
     }
 
     public function searchMember()
@@ -216,7 +249,7 @@ class Member extends MY_Controller
         if (!empty($data['ids'])) {
             $whereIn = ['a.id' => explode(',',trim($data['ids'],','))];
         }
-        $list = $this->MemberModel->getMemberList(1,2999,$condition,$whereIn);
+        $list = $this->MemberModel->getMemberList(1,5000,$condition,$whereIn);
         // D($listt);
         if (empty($list)) {
             echo '未查到符合条件的数据';return;
@@ -225,6 +258,7 @@ class Member extends MY_Controller
         //     $list[$k]['lastComment'] = preg_replace("/[\s]/",'',$v['lastComment']);
         // }
         $header = array(
+            'created'        => '导入时间',
             'name'           => '姓名',
             'sex'            => '性别',
             'age'            => '年龄',
@@ -237,6 +271,7 @@ class Member extends MY_Controller
             'reservedFunds'  => '公积金',
             'haveHouse'      => '有房',
             'haveCar'        => '有车',
+            'daiMoney'       => '贷款额度',
             'firstName'      => '业务员',
             'meetTime'       => '预约时间',
             'customStatus'   => '用户状态',
@@ -461,6 +496,7 @@ class Member extends MY_Controller
         } else {
             $data = $this->session->userdata('orderList');
         }
+        // D($data);
         // echo '<pre>';print_r($this->userinfo);die;
         $condition = [];
         if (!empty($data['status'])) {
@@ -478,8 +514,11 @@ class Member extends MY_Controller
         if (!empty($data['sendEnd'])) {
             $condition['a.sendTime <='] = $data['sendEnd'] . ' 23:59:59';
         }
+        if (!empty($data['tag'])) {
+            $data['uid']      = $data['tag'];
+        }
         if (!empty($data['uid'])) {
-            $condition['a.uid'] = $data['uid'] . ' 23:59:59';
+            $condition['a.uid'] = $data['uid'];
         }
         if (!empty($data['content'])) {
             $condition['CONCAT(a.username,a.mobile,b.city) like'] = "%{$data['content']}%";
@@ -511,6 +550,8 @@ class Member extends MY_Controller
         $id   = $this->input->get('id');
         $info = $this->MemberModel->getOrderInfo($id);
         // D($this->userinfo);
+        $users = $this->MemberModel->getUser();
+        $this->ci_smarty->assign('users',$users);
         $this->ci_smarty->assign('data', $info);
         $this->ci_smarty->display('member/editOrder.tpl');
     }
@@ -565,7 +606,7 @@ class Member extends MY_Controller
         if (!empty($data['content'])) {
             $condition['CONCAT(a.username,a.mobile,b.city) like'] = "%{$data['content']}%";
         }
-        $list  = $this->MemberModel->getOrderList(1,999,$condition);
+        $list  = $this->MemberModel->getOrderList(1,5000,$condition);
         // echo '<pre>';print_r($list);die;
         if (empty($list)) {
             echo '未查到符合条件的数据';return;

@@ -5,6 +5,7 @@ class Outside extends CI_Controller
 {
     protected $data;
     protected $dataLevel;
+    protected $status;
     public function __construct()
     {
         parent::__construct();
@@ -32,10 +33,11 @@ class Outside extends CI_Controller
         // print_r($cominfo['appSecrect']);die;
         $sign = $this->CommonModel->sign($cominfo['appSecrect'], $this->data);
         // print_r($sign);die;
-        // if ($this->data['sign'] != $sign) {
-        //     $this->CommonModel->output(['errcode' => 10000,'errmsg' => '签名错误']);
-        // }
+        if ($this->data['sign'] != $sign) {
+            $this->CommonModel->output(['errcode' => 10000,'errmsg' => '签名错误']);
+        }
         $this->dataLevel = $cominfo['dataLevel'];
+        $this->status = $cominfo['status'];
     }
 
     public function customInfo()
@@ -47,7 +49,12 @@ class Outside extends CI_Controller
         if(empty($data['name'])){
             $this->CommonModel->output(['errcode' => 10003,'errmsg' => '姓名不能为空']);
         }
-        $rs = $this->db->get_where('md_custom_list',['mobile' => $data['mobile'],'created >' => date('Y-m-d',strtotime('-180 days'))])->row_array();
+        if ($this->status == 2) {
+            $base = 'md_custom_list';
+        } else {
+            $base = 'test_base.md_custom_list';
+        }
+        $rs = $this->db->get_where($base,['mobile' => $data['mobile'],'created >' => date('Y-m-d',strtotime('-180 days'))])->row_array();
         if (!empty($rs)) {
             $this->CommonModel->output(['errcode' => 10004,'errmsg' => '该数据已存在']);
         }

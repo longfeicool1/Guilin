@@ -107,6 +107,23 @@ class MemberModel extends MY_Model
         return $result;
     }
 
+    public function autoGetUser($condition = [])
+    {
+        $this->rules();
+        if (!empty($this->uids)) {
+            $this->db->where_in('uid',$this->uids);
+        }
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        $result = $this->db->select('name AS label,uid AS value')->get_where('md_user',['position >=' => 3,'is_show' => 1])->result_array();
+        return $result;
+    }
+
+
+
     public function getMemberList($page,$size,$condition,$whereOr = [])
     {
         if ($condition) {

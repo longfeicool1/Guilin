@@ -142,7 +142,8 @@ class Data extends MY_Controller
         // echo '<pre>';print_r($this->userinfo);die;
         $condition = [];
         if (!empty($data['uid'])) {
-            $condition['uid'] = $data['uid'];
+            $condition['secOwer'] = $data['uid'];
+            $condition2['uid']    = $data['uid'];
         }
         $collectDate = date('Y-m-d');
         if (!empty($data['collectDate'])) {
@@ -160,8 +161,8 @@ class Data extends MY_Controller
         }
         $list    = $this->DataModel->getLiveData($condition,$condition2,$collectDate);
         // $info = $this->DataModel->getPersonalData();
-        // $users   = $this->MemberModel->getUser();
-        // $this->ci_smarty->assign('users',$users);
+        $users   = $this->MemberModel->getUser();
+        $this->ci_smarty->assign('users',$users);
         $this->ci_smarty->assign('list',$list);
         $this->ci_smarty->assign('count',0);
         $this->ci_smarty->assign('position',$this->userinfo['position']);

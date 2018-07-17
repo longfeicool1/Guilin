@@ -7,10 +7,10 @@
         <div class="bjui-searchBar">
             <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['bt'])}}{{$search['bt']}}{{/if}}" name="bt" autocomplete="off"
-                       placeholder="删除时间开始"/>
+                       placeholder="删除时间开始"readonly/>
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
-                   name="et" autocomplete="off" placeholder="删除时间结束"/>
+                   name="et" autocomplete="off" placeholder="删除时间结束"readonly/>
             <select name="dataLevel" id="dataLevel" data-toggle="selectpicker">
                 <option {{if empty($search['dataLevel'])}}selected{{/if}} value="">--数据类型--</option>
                 <option value="A" {{if $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>

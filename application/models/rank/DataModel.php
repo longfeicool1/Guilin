@@ -259,8 +259,11 @@ class DataModel extends MY_Model
         foreach ($rs2 as $v) {
             $new2[$v['uid']] =$v['dayPhone'];
         }
-        $startMonth = date('Y-m-01',strtotime('-1 day'));
-        $endMonth   = date('Y-m-31',strtotime('-1 day'));
+        $startMonth = date('Y-m-01',strtotime($collectDate));
+        $endMonth   = date('Y-m-31',strtotime($collectDate));
+        if (!empty($condition1['secOwer'])) {
+            $this->db->where(['secOwer' => $condition1['secOwer']]);
+        }
         if (!empty($this->uids)) {
             $this->db->where_in('secOwer',$this->uids);
         }
@@ -277,7 +280,11 @@ class DataModel extends MY_Model
         if (!empty($this->uids)) {
             $this->db->where_in('uid',$this->uids);
         }
-        $users = $this->db->select('uid,name')->get_where('md_user',['position >' => 3,'is_show' => 1])->result_array();
+        $c = ['position >' => 3,'is_show' => 1];
+        if (!empty($condition1['secOwer'])) {
+            $c['uid'] = $condition1['secOwer'];
+        }
+        $users = $this->db->select('uid,name')->get_where('md_user',$c)->result_array();
         $list = [];
         foreach ($users as $k =>$v) {
             $users[$k]['collectDate']      = $collectDate;

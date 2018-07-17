@@ -11,17 +11,17 @@
             <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['bt'])}}{{$search['bt']}}{{/if}}"
                        name="bt" autocomplete="off"
-                       placeholder="预约时间开始"/>
+                       placeholder="预约时间开始"readonly/>
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['et'])}}{{$search['et']}}{{/if}}"
-                   name="et" autocomplete="off" placeholder="预约时间结束"/>
+                   name="et" autocomplete="off" placeholder="预约时间结束"readonly/>
             <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['sct'])}}{{$search['sct']}}{{/if}}"
                        name="sct" autocomplete="off"
-                       placeholder="最后备注时间开始"/>
+                       placeholder="最后备注时间开始"readonly/>
             <input data-toggle="datepicker" type="text"
                    value="{{if isset($search['ect'])}}{{$search['ect']}}{{/if}}"
-                   name="ect" autocomplete="off" placeholder="最后备注时间结束"/>
+                   name="ect" autocomplete="off" placeholder="最后备注时间结束"readonly/>
             <select name="dataLevel" id="dataLevel" data-toggle="selectpicker">
                 <option {{if empty($search['dataLevel'])}}selected{{/if}} value="">--数据类型--</option>
                 <option value="A" {{if !empty($search['dataLevel']) && $search['dataLevel'] == 'A'}}selected{{/if}}>A级</option>
@@ -43,12 +43,21 @@
                 <option {{if !empty($search['customStatus']) && $search['customStatus'] == $k}}selected{{/if}} value="{{$k}}">{{$v}}</option>
                 {{/foreach}}
             </select>
-            <select name="firstOwer" id="firstOwer" data-toggle="selectpicker">
+            <!-- <select name="firstOwer" id="firstOwer" data-toggle="selectpicker">
                 <option {{if empty($search['firstOwer'])}}selected{{/if}} value="">--业务员--</option>
                 {{foreach $users as $v}}
                 <option {{if !empty($search['firstOwer']) && $search['firstOwer'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
                 {{/foreach}}
-            </select>
+            </select> -->
+            <input type="hidden" name="firstOwer" value="{{if !empty($search['firstOwer'])}}{{$search['firstOwer']}}{{/if}}">
+            <input type="text"
+                data-toggle="tags"
+                data-width="180"
+                data-clear="true"
+                data-url="/member/member/searchUser"
+                placeholder="输入业务员自动查找"
+                data-max=1
+                autocomplete="off">
             <select name="source" id="customLevel" data-toggle="selectpicker">
                 <option {{if empty($search['customLevel'])}}selected{{/if}} value="">--来源--</option>
                 {{foreach $source as $v}}
@@ -59,7 +68,7 @@
                 <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['spt'])}}{{$search['spt']}}{{/if}}"
                        name="spt" autocomplete="off"
-                       placeholder="导入时间开始"/>
+                       placeholder="导入时间开始" readonly />
                 <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['ept'])}}{{$search['ept']}}{{/if}}"
                        name="ept" autocomplete="off" placeholder="导入时间结束"/>
@@ -74,11 +83,11 @@
                 </button>
                 &nbsp;
                 <button type="button" class="btn-blue dq" data-t="2" data-icon="list"
-                        {{if !empty($search['t']) && $search['t'] == 2}}style="background-color: #428bca;color: #FFF;"{{/if}}>今日分配
+                        {{if !empty($search['t']) && $search['t'] == 2}}style="background-color: #428bca;color: #FFF;"{{else if $new > 0}}style="background-color: #c72222;color: #FFF;"{{/if}}>今日分配({{$new}})
                 </button>
                 &nbsp;
                 <button type="button" class="btn-blue dq" data-t="3" data-icon="plus"
-                        {{if !empty($search['t']) && $search['t'] == 3}}style="background-color: #428bca;color: #FFF;"{{/if}}>尚未处理
+                        {{if !empty($search['t']) && $search['t'] == 3}}style="background-color: #428bca;color: #FFF;"{{else if $old > 0}}style="background-color: #c72222;color: #FFF;"{{/if}}>尚未处理({{$old}})
                 </button>
                 <input type="hidden" name="t" value="{{if !empty($search['t'])}}{{$search['t']}}{{/if}}"/>
                 &nbsp;

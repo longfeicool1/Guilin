@@ -1,11 +1,11 @@
 <div class="bjui-pageHeader">
-    <form id="pagerForm" class="frm_personal" data-toggle="ajaxsearch" action="/rank/data/callTotal" method="post">
+    <form id="pagerForm" class="frm_callTotal" data-toggle="ajaxsearch" action="/rank/data/callTotal" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <div class="bjui-searchBar">
             <input data-toggle="datepicker" type="text"
                        value="{{if isset($search['collectDate'])}}{{$search['collectDate']}}{{/if}}" name="collectDate" autocomplete="off"
-                       placeholder="查看日期"/>
+                       placeholder="查看日期" readonly />
             <select name="uid" id="uid" data-toggle="selectpicker">
                 <option {{if empty($search['uid'])}}selected{{/if}} value="">--业务员--</option>
                 {{if !empty($users)}}
@@ -56,13 +56,13 @@
 </div>
 <!-- {{include file='../public/page.tpl'}} -->
 <script>
-    $('.frm_personal select').change(function (){
-        $('.frm_personal').submit();
+    $('.frm_callTotal select').change(function (){
+        $('.frm_callTotal').submit();
     })
 
     function downloadTotal()
     {
-        params = $('.frm_personal').serialize();
+        params = $('.frm_callTotal').serialize();
         var gourl = '/rank/data/downLoadCallData?' + params;
         window.open(gourl);
     }
