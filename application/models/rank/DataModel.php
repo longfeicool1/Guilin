@@ -285,17 +285,61 @@ class DataModel extends MY_Model
             $c['uid'] = $condition1['secOwer'];
         }
         $users = $this->db->select('uid,name')->get_where('md_user',$c)->result_array();
+        // 今日预约
+        $today = $this->getMemberCount([
+            'a.isShow'     => 1,
+            'meetTime >= ' => date('Y-m-d'),
+            'meetTime <= ' => date('Y-m-d',strtotime('+1 day')),
+        ],'');
+        $ntoday = [];
+        foreach ($today as $v) {
+            $ntoday[$v['firstOwer']] = $v['tot'];
+        }
+        // 尚未处理
+        $old   = $this->getMemberCount([
+            'a.isShow'      => 1,
+            'firstOwer != ' => 57,
+            'secOwer != '   => 57,
+            'firstOwer!='   => 109,
+            'secOwer!='     => 109,
+        ],['callType'   => 1, 'isAllot' => 2]);
+        // print_r($this->db->last_query());die;
+        $nold = [];
+        foreach ($old as $v) {
+            $nold[$v['firstOwer']] = $v['tot'];
+        }
+
         $list = [];
         foreach ($users as $k =>$v) {
             $users[$k]['collectDate']      = $collectDate;
             $users[$k]['dayAllotCustom']   = !empty($new1[$v['uid']]) ? $new1[$v['uid']] : 0;
             $users[$k]['dayPhone']         = !empty($new2[$v['uid']]) ? $new2[$v['uid']] : 0;
             $users[$k]['monthAllotCustom'] = !empty($new3[$v['uid']]) ? $new3[$v['uid']] : 0;
+            $users[$k]['today']            = !empty($ntoday[$v['uid']]) ? $ntoday[$v['uid']] : 0;
+            $users[$k]['old']              = !empty($nold[$v['uid']]) ? $nold[$v['uid']] : 0;
         }
         $sort = array_column($users,'monthAllotCustom');
         array_multisort($sort,SORT_DESC,SORT_NUMERIC,$users);
-        // D($users);
         return $users;
     }
 
+    public function getMemberCount($condition,$whereOr)
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        if(empty($this->uids)){
+            $this->rules();
+        }
+        if(!empty($this->uids)){
+            $this->db->where_in('firstOwer',$this->uids);
+        }
+        if ($whereOr) {
+            $this->db->where("(`callType` = 1 OR `isAllot` = 2)");
+        }
+        $count = $this->db->select('firstOwer, count(*) as tot')->group_by('firstOwer')->get('md_custom_list a')->result_array();
+        return $count;
+    }
 }

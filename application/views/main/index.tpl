@@ -241,7 +241,7 @@
         /*body,td,th{font-size: 16px !important;}*/
     </style>
 </head>
-<body>
+<body onselectstart="return false;">
 <!--[if lte IE 7]>
 <div id="errorie">
     <div>

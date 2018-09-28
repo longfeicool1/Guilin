@@ -18,6 +18,10 @@ class MemberModel extends MY_Model
         4 => '代发工资',
 
     ];
+    public $insureCode = [
+        1 => '无',
+        2 => '有',
+    ];
     public $socialSecurity = [
         1 => '无',
         2 => '有',
@@ -161,6 +165,7 @@ class MemberModel extends MY_Model
             $result[$k]['socialSecurity']  = $this->socialSecurity[$v['socialSecurity']];
             $result[$k]['reservedFunds']   = $this->reservedFunds[$v['reservedFunds']];
             $result[$k]['haveHouse']       = $this->haveHouse[$v['haveHouse']];
+            $result[$k]['insureCode']      = $this->insureCode[$v['insureCode']];
             $result[$k]['haveCar']         = $this->haveCar[$v['haveCar']];
             $result[$k]['customLevel']     = $v['customLevel'] == 1 ? '新数据' : $this->customLevel[$v['customLevel']];
             $result[$k]['meetTime']        = $v['meetTime'] == '0000-00-00 00:00:00' ? '未预约' : $v['meetTime'];
@@ -175,6 +180,8 @@ class MemberModel extends MY_Model
                 }
             }
         }
+        // echo '<pre>';
+        // print_r($result);die;
         return $result;
     }
 

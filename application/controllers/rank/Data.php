@@ -199,10 +199,12 @@ class Data extends MY_Controller
             'collectDate'      => '日期',
             'name'             => '姓名',
             'monthAllotCustom' => '总量',
+            'today'            => '今日预约',
+            'old'              => '尚未处理',
             'dayAllotCustom'   => '当天下发量',
             'dayPhone'         => '当天拨打次数',
         );
-        // echo '<pre>';print_r($data);die;
+        // echo '<pre>';print_r($list);die;
         $filename = date('Y-m-d').'业务员数据统计.xls';
         $this->CommonModel->export($header, $list, $filename);
     }

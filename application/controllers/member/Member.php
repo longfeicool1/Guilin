@@ -42,11 +42,11 @@ class Member extends MY_Controller
         }
         if (!empty($data['t']) && $data['t'] == 1) {
             $condition['meetTime >='] = date('Y-m-d');
-            $condition['meetTime <='] = date('Y-m-d',strtotime('+1 day'));
+            $condition['meetTime <='] = date('Y-m-d 23:59:59');
         }
         if (!empty($data['t']) && $data['t'] == 2) {
             $condition['a.give_time >='] = date('Y-m-d');
-            $condition['a.give_time <='] = date('Y-m-d',strtotime('+1 day'));
+            $condition['a.give_time <='] = date('Y-m-d 23:59:59');
         }
         if (!empty($data['t']) && $data['t'] == 3) {
             $whereOr['callType'] = 1;
@@ -78,21 +78,19 @@ class Member extends MY_Controller
         if (!empty($data['content'])) {
             $condition['CONCAT(a.name,a.mobile,a.city,a.source) like'] = "%{$data['content']}%";
         }
+        // print_r($condition);die;
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
         $list  = $this->MemberModel->getMemberList($page,$size,$condition,$whereOr);
-        // print_r($this->db->last_query());die;
+
         $count = $this->MemberModel->getMemberCount($condition,$whereOr);
+        // print_r($this->db->last_query());die;
         $users = $this->MemberModel->getUser();
         $new   = $this->MemberModel->getMemberCount([
             'a.isShow'        => 1,
             'customLevel'     => 1,
             'a.give_time >='  => date('Y-m-d'),
-            'a.give_time <= ' => date('Y-m-d',strtotime('+1 day')),],'');
-        //$condition['firstOwer != '] = 57;
-            $condition['secOwer != '] = 57;
-            $condition['firstOwer!='] = 109;
-            $condition['secOwer!='] = 109;
+            'a.give_time <= ' => date('Y-m-d 23:59:59'),],'');
         $old   = $this->MemberModel->getMemberCount([
             'a.isShow'      => 1,
             'firstOwer != ' => 57,
@@ -100,9 +98,15 @@ class Member extends MY_Controller
             'firstOwer!='   => 109,
             'secOwer!='     => 109,
             ],['callType'   => 1, 'isAllot' => 2]);
+        $today = $this->MemberModel->getMemberCount([
+            'a.isShow'     => 1,
+            'meetTime >= ' => date('Y-m-d'),
+            'meetTime <= ' => date('Y-m-d 23:59:59'),
+            ],'');
         // print_r($list);die;
         $this->ci_smarty->assign('new',$new);
         $this->ci_smarty->assign('old',$old);
+        $this->ci_smarty->assign('today',$today);
         $this->ci_smarty->assign('source',$this->MemberModel->getSource());
         $this->ci_smarty->assign('customStatus',$this->MemberModel->customStatus);
         $this->ci_smarty->assign('users',$users);
@@ -271,6 +275,7 @@ class Member extends MY_Controller
             'reservedFunds'  => '公积金',
             'haveHouse'      => '有房',
             'haveCar'        => '有车',
+            'insureCode'     => '有寿险',
             'daiMoney'       => '贷款额度',
             'firstName'      => '业务员',
             'meetTime'       => '预约时间',
@@ -279,6 +284,7 @@ class Member extends MY_Controller
             'customLevel'    => '名单星级',
             'callTypeName'   => '通话记录',
             'source'         => '来源',
+            'ad'             => '广告',
             'lastComment'    => '最后备注内容',
         );
         // echo '<pre>';print_r($data);die;

@@ -101,6 +101,9 @@ class Outside extends CI_Controller
         if(!empty($data['income'])){
             $insert['income'] = $data['income'];
         }
+        if(!empty($data['haveInsure'])){
+            $insert['insureCode'] = $data['haveInsure'];
+        }
         if(!empty($data['reservedFunds'])){
             $insert['reservedFunds'] = $data['reservedFunds'];
         }
@@ -109,6 +112,9 @@ class Outside extends CI_Controller
         }
         if(!empty($data['daiTime'])){
             $insert['daiTime'] = $data['daiTime'];
+        }
+        if(!empty($data['ad'])){
+            $insert['ad'] = $data['ad'];
         }
         if(!empty($data['appid'])){
             $insert['source'] = $data['appid'];

@@ -79,7 +79,7 @@
 
             <div style="margin-top: 5px">
                 <button type="button" class="btn-blue dq" data-t="1" data-icon="comment"
-                    {{if !empty($search['t']) && $search['t'] == 1}}style="background-color: #428bca;color: #FFF;"{{/if}}>今日预约
+                    {{if !empty($search['t']) && $search['t'] == 1}}style="background-color: #428bca;color: #FFF;"{{else if $old > 0}}style="background-color: #c72222;color: #FFF;"{{/if}}>今日预约({{$today}})
                 </button>
                 &nbsp;
                 <button type="button" class="btn-blue dq" data-t="2" data-icon="list"
