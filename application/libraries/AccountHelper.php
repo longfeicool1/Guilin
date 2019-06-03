@@ -174,7 +174,7 @@ class AccountHelper
      */
     public static function checkUsername($username,$type = 1)
     {
-        $valid = strlen($username) != 11 || !preg_match('/^1[3|4|5|7|8][0-9]\d{4,8}$/', $username) ? false : true;
+        $valid = strlen($username) != 11 || !preg_match('/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/', $username) ? false : true;
         if (!$valid) {
             return '你输入正确的手机号';
         }
@@ -185,8 +185,10 @@ class AccountHelper
             return '账号不正确';
         }
         if ($type == 2) {
-            $rules           = $model->getRules($info['role_id']);
-            $info['menu_id'] = $rules;
+            $rules                       = $model->getRules($info['role_id']);
+            $info['menu_id']             = $rules['rule_id'];
+            $info['is_finance']          = $rules['is_finance'];
+            $info['look_city']           = explode(',', $rules['look_city']);
             AccountHelper::$_accountData = $info;
         }
     }
@@ -241,8 +243,10 @@ class AccountHelper
         if ($password != $info['password']){
             return '账号或密码不正确';
         }
-        $rules           = $model->getRules($info['role_id']);
-        $info['menu_id'] = $rules;
+        $rules                       = $model->getRules($info['role_id']);
+        $info['menu_id']             = $rules['rule_id'];
+        $info['is_finance']          = $rules['is_finance'];
+        $info['look_city']           = explode(',', $rules['look_city']);
         AccountHelper::$_accountData = $info;
     }
 

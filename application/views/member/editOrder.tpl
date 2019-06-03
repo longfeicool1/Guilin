@@ -62,12 +62,16 @@
             <td>
                 <label for="uid" class="control-label x90">业务员：</label>
                 {{if checkAuth(191)}}
-                <select name="uid" id="uid" data-toggle="selectpicker">
-                    <option {{if empty($data['uid'])}}selected{{/if}} value="">--业务员--</option>
-                    {{foreach $users as $v}}
-                    <option {{if !empty($data['uid']) && $data['uid'] == $v['uid']}}selected{{/if}} value="{{$v['uid']}}">{{$v['name']}}</option>
-                    {{/foreach}}
-                </select>
+                <input type="hidden" name="uid" value="{{if !empty($data['uid'])}}{{$data['uid']}}{{/if}}">
+                <input type="text"
+                    data-toggle="tags"
+                    data-width="180"
+                    data-clear="true"
+                    data-url="/member/member/searchUser"
+                    placeholder="输入业务员自动查找"
+                    data-max=1
+                    value="{{$data['firstName']}}"
+                    autocomplete="off">
                 {{else}}
                 <span>{{$data['firstName']}}</span>
                 {{/if}}
@@ -96,6 +100,7 @@
 
             </td>
         </tr>
+
     </table>
 </fieldset>
 {{if $data['status'] == 6}}

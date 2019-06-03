@@ -8,6 +8,7 @@ class Outside extends CI_Controller
     protected $status;
     public function __construct()
     {
+        error_reporting(0);
         parent::__construct();
         $this->load->model('api/OutsideModel');
         $this->load->model('CommonModel');
@@ -15,6 +16,7 @@ class Outside extends CI_Controller
         if (empty($post)) {
             $this->CommonModel->output(['errcode' => 10005,'errmsg' => '数据格式错误1']);
         }
+        file_put_contents('./error.log', $post,FILE_APPEND);
         // log_message('Debug',print_r($post,true));
         $this->data   = json_decode($post,true);
         if (!is_array($this->data)) {
@@ -54,7 +56,7 @@ class Outside extends CI_Controller
         } else {
             $base = 'test_base.md_custom_list';
         }
-        $rs = $this->db->get_where($base,['mobile' => $data['mobile'],'created >' => date('Y-m-d',strtotime('-180 days'))])->row_array();
+        $rs = $this->db->get_where($base,['mobile' => $data['mobile'],'created >' => date('Y-m-d',strtotime('-1800 days'))])->row_array();
         if (!empty($rs)) {
             $this->CommonModel->output(['errcode' => 10004,'errmsg' => '该数据已存在']);
         }

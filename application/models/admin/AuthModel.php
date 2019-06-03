@@ -9,6 +9,7 @@ class AuthModel extends MY_Model
 {
     public function createMenu($menuid)
     {
+        // D($menuid);
         $rule1    = $this->db
             ->where_in('id',$menuid)
             ->order_by('order_num ASC')

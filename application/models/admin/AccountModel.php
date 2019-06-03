@@ -18,9 +18,10 @@ class AccountModel extends MY_Model
 
     public function getRules($roleid)
     {
-        $sql    = "SELECT rule_id FROM md_auth_role WHERE id = ?";
+        $sql    = "SELECT rule_id,is_finance,look_city FROM md_auth_role WHERE id = ?";
         $result = $this->db->query($sql,[$roleid])->row_array();
-        return  !empty($result) ? explode(',',trim($result['rule_id'],',')) : [];
+        $result['rule_id'] = !empty($result) ? explode(',',trim($result['rule_id'],',')) : [];
+        return  $result;
     }
 
 }

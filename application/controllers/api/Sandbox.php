@@ -39,7 +39,10 @@ class Sandbox extends CI_Controller
         }
        // print_r($cominfo['appSecrect']);die;
         $sign = $this->sign($cominfo['appSecrect'], $this->data);
-        // print_r($sign);die;
+        // print_r($sign);
+        // echo PHP_EOL;
+        // print_r($this->data['sign']);
+        // die;
         if ($this->data['sign'] != $sign) {
             print_r("检验结果::未通过".PHP_EOL);
         } else {
@@ -65,6 +68,7 @@ class Sandbox extends CI_Controller
         print_r("values::{$values}".PHP_EOL);
         // print_r("secrect::{$secrect}".PHP_EOL);
         print_r("sign::".md5(md5($values) . $secrect).PHP_EOL);
+        return md5(md5($values) . $secrect);
     }
 
 }

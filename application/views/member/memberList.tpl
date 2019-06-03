@@ -73,6 +73,7 @@
                        value="{{if isset($search['ept'])}}{{$search['ept']}}{{/if}}"
                        name="ept" autocomplete="off" placeholder="导入时间结束"/>
                 <input type="text" value="{{if !empty($search['content'])}}{{$search['content']}}{{/if}}" name="content" class="form-control" placeholder="搜索(手机、姓名、城市、来源)" style="width:300px">
+                <input type="text" value="{{if !empty($search['comment'])}}{{$search['comment']}}{{/if}}" name="comment" class="form-control" placeholder="搜索备注">
             <button type="submit" class="btn-green" data-icon="search">查询</button>&nbsp;
             <a class="btn btn-orange" href="javascript:;" data-toggle="reloadsearch" data-clear-query="true" data-icon="undo">清空查询</a>
             </div>
@@ -240,7 +241,6 @@
         } else {
             params = $('.frm_member').serialize();
         }
-
         var gourl = '/member/member/memberDownload?' + params;
         window.open(gourl);
     }

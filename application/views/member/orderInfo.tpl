@@ -97,7 +97,13 @@
                 </select>
             </td>
         </tr>
-
+        <tr>
+            <td>
+                <label for="comment" class="control-label x90">备注：</label>
+                <!-- <input type="text" name="comment" value="{{$data['comment']}}" class="form-control"> -->
+                <textarea class="form-control autosize" name="comment" rows="1" {{if !checkAuth(192)}}disabled{{/if}}>{{if !empty($data['comment'])}}{{$data['comment']}}{{/if}}</textarea>
+            </td>
+        </tr>
     </table>
     <table style="margin-top: 5px" class="table table-bordered table-hover table-striped table-top" data-selected-multi="true">
         <tfoot class="{{if $data['status'] == 6}}showTr{{else}}hiddenTr{{/if}}">

@@ -130,6 +130,10 @@ class MemberModel extends MY_Model
 
     public function getMemberList($page,$size,$condition,$whereOr = [])
     {
+        if (!empty($condition['comment'])) {
+            $comment = $condition['comment'];
+            unset($condition['comment']);
+        }
         if ($condition) {
             foreach ($condition as $k=>$v) {
                 $this->db->where([$k => $v]);
@@ -146,11 +150,16 @@ class MemberModel extends MY_Model
             $this->db->where("(`callType` = 1 OR `isAllot` = 2)");
         }
         // print_r($this->uids);die;
+
         $offset = ($page - 1) * $size;
-        $result = $this->db
-            ->select("a.*,IFNULL(b.name,'未分配') AS firstName")
-            ->join('md_user b','a.firstOwer = b.uid','left')
-            ->limit($size,$offset)
+        $this->db->select("a.*,IFNULL(b.name,'未分配') AS firstName")
+            ->join('md_user b','a.firstOwer = b.uid','left');
+        // $condition['comment'] = '不需要贷款';
+        if (!empty($comment)) {
+            $sql = "SELECT * FROM md_comment WHERE content LIKE '%{$comment}%' GROUP BY cid";
+            $this->db->join("({$sql}) AS c",'a.id = c.cid');
+        }
+        $result = $this->db->limit($size,$offset)
             ->order_by('meetTime ASC,a.updated DESC,a.created DESC')
             ->get('md_custom_list a')
             ->result_array();
@@ -187,6 +196,10 @@ class MemberModel extends MY_Model
 
     public function getMemberCount($condition,$whereOr)
     {
+        if (!empty($condition['comment'])) {
+            $comment = $condition['comment'];
+            unset($condition['comment']);
+        }
         if ($condition) {
             foreach ($condition as $k=>$v) {
                 $this->db->where([$k => $v]);
@@ -201,7 +214,13 @@ class MemberModel extends MY_Model
         if ($whereOr) {
             $this->db->where("(`callType` = 1 OR `isAllot` = 2)");
         }
+        // $condition['comment'] = '不需要贷款';
+        if (!empty($comment)) {
+            $sql = "SELECT * FROM md_comment WHERE content LIKE '%{$comment}%' GROUP BY cid";
+            $this->db->join("({$sql}) AS c",'a.id = c.cid');
+        }
         $count = $this->db->count_all_results('md_custom_list a');
+        // D($this->db->last_query());
         return $count;
     }
 
@@ -300,6 +319,11 @@ class MemberModel extends MY_Model
             return ['errcode' => 200, 'errmsg' => '创建成功'];
         }
         return ['errcode' => 300, 'errmsg' => '创建失败'];
+    }
+
+    public function getCity()
+    {
+        return $this->db->select('city')->group_by('city')->get('md_check_order')->result_array();
     }
 
     public function getOrderList($page,$size,$condition = [])
@@ -446,5 +470,63 @@ class MemberModel extends MY_Model
         return $count;
     }
 
+    //=========================================================================================
+    public function getFinanceOrderList($page,$size,$condition = [])
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        // if(empty($this->uids)){
+        //     $this->rules();
+        // }
+        // D($this->userinfo['look_city']);
+        if(!empty($this->userinfo['look_city'])){
+            $this->db->where_in('a.city',$this->userinfo['look_city']);
+        }else {
+            return [];
+        }
+        $offset = ($page - 1) * $size;
+        $result = $this->db
+            ->select("a.*,b.name as firstName,c.name as team,d.name as area")
+            ->join('md_user b','a.uid = b.uid','left')
+            ->join('md_user c','b.parent_id = c.uid','left')
+            ->join('md_user d','d.parent_id = d.uid','left')
+            ->limit($size,$offset)
+            ->order_by('a.created DESC')
+            ->get('md_check_order a')
+            ->result_array();
+        $n = 0;
+        foreach ($result as $k => $v) {
+            $n++;
+            $result[$k]['xuhao']      = $n;
+            $result[$k]['orderStatus'] = $this->orderStaus[$v['status']];
+            $result[$k]['isBackMoney'] = $this->isBackMoney[$v['isBackMoney']];
+            $result[$k]['sendTime'] = $v['sendTime'] == '0000-00-00' ? '暂无' : $v['sendTime'];
+        }
+        return $result;
+    }
+
+    public function getFinanceOrderCount($condition)
+    {
+        if ($condition) {
+            foreach ($condition as $k=>$v) {
+                $this->db->where([$k => $v]);
+            }
+        }
+        // if(empty($this->uids)){
+        //     $this->rules();
+        // }
+        if(!empty($this->userinfo['look_city'])){
+            $this->db->where_in('a.city',$this->userinfo['look_city']);
+        } else {
+            return 0;
+        }
+        $count = $this->db
+        ->join('md_user b','a.uid = b.uid','left')
+        ->count_all_results('md_check_order a');
+        return $count;
+    }
 
 }

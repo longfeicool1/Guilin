@@ -3,7 +3,7 @@
     .font-del{color: red}
 </style>
 <div class="bjui-pageHeader" style="marign:5px;">
-    <form id="pagerForm" class="frm_member" data-toggle="ajaxsearch" action="/member/member/searchMember" method="post">
+    <form id="pagerForm" class="frm_searMember" data-toggle="ajaxsearch" action="/member/member/searchMember" method="post">
         <input type="hidden" name="pageSize" value="${model.pageSize}">
         <input type="hidden" name="pageCurrent" value="${model.pageCurrent}">
         <!-- <input type="hidden" name="orderField" value="${param.orderField}">
@@ -131,7 +131,7 @@
 </div>
 {{include file='../public/page.tpl'}}
 <script>
-    $('.frm_member select').change(function (){
-        $('.frm_member').submit();
+    $('.frm_searMember select').change(function (){
+        $('.frm_searMember').submit();
     })
 </script>

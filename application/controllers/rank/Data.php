@@ -198,6 +198,7 @@ class Data extends MY_Controller
         $header = array(
             'collectDate'      => '日期',
             'name'             => '姓名',
+            'city'             => '城市',
             'monthAllotCustom' => '总量',
             'today'            => '今日预约',
             'old'              => '尚未处理',

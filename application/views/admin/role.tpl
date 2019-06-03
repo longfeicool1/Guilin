@@ -1,3 +1,7 @@
+<style type="text/css">
+    .hiddenTr{display:none}
+    .showTr{display:block;}
+</style>
 <div class="bjui-pageContent">
     <fieldset>
         <legend>角色管理</legend>
@@ -74,6 +78,21 @@
                                 <input type="text" name="role_name" id="role_name" value=""class="form-control"  data-rule="required" data-tip="该项不能为空" placeholder="角色名称" style="width: 200px;">
                             </td>
                         </tr>
+                        <tr id="roleType">
+                            <td>
+                                <label class="control-label x85">角色类型：</label>
+                                <input type="radio" name="is_finance" value="1" data-toggle="icheck" data-label="普通角色" checked>
+                                <input type="radio" name="is_finance" value="2" data-toggle="icheck" data-label="财务角色">
+                            </td>
+                        </tr>
+                        <tr id="checkcity" style="display: none">
+                            <td>
+                                <label class="control-label x85">审件城市：</label>
+                                {{foreach $city as $v}}
+                                <input type="checkbox" name="look_city[]" value="{{$v['city']}}" data-toggle="icheck" data-label="{{$v['city']}}" checked>
+                                {{/foreach}}
+                            </td>
+                        </tr>
                         <tr>
                             <td>
                                 <label class="control-label x85">是否启用：</label>
@@ -109,3 +128,21 @@
         </div>
     </fieldset>
 </div>
+<script type="text/javascript">
+    // $('radio[name=is_finance]').change(function() {
+    //     console.log(11)
+    //     // if ($('radio[name=is_finance]:checked').val() == 2) {
+    //     //     $('#carinfo').addClass('hidden')
+    //     // } else {
+    //     //     $('#carinfo').removeClass('hidden')
+    //     // }
+    // });
+
+    $('#roleType input[type="radio"]:checked').on('ifChanged', function(e) {
+        if ($('#roleType input[type="radio"]:checked').val() == 1) {
+            $('#checkcity').hide()
+        } else {
+            $('#checkcity').show()
+        };
+    })
+</script>

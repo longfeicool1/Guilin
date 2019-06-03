@@ -7,6 +7,7 @@ class Auth extends MY_Controller
     {
         parent::__construct();
         $this->load->model('admin/AuthModel');
+        $this->load->model('member/MemberModel');
         $this->load->model('CommonModel');
     }
 
@@ -43,6 +44,9 @@ class Auth extends MY_Controller
     {
         $role = $this->AuthModel->getRoleList();
         $rule = $this->AuthModel->toGetAuth();
+        $city = $this->MemberModel->getCity();
+        // D($city);
+        $this->ci_smarty->assign('city', $city);
         $this->ci_smarty->assign('role', $role);
         $this->ci_smarty->assign('rule', $rule);
         $this->ci_smarty->display('admin/role.tpl');
@@ -52,6 +56,12 @@ class Auth extends MY_Controller
     {
         $roleId = $this->input->get('role_id','');
         $data   = $this->input->post();
+        if (!empty($data['is_finance']) && $data['is_finance'] == 2) {
+            $data['look_city'] = implode(',',$data['look_city']);
+        } else {
+            $data['look_city'] = '';
+            // unset($data['look_city']);
+        }
         $result = $this->AuthModel->toAddRole($data,$roleId);
 
         if ($result['errcode'] == 200) {
@@ -66,6 +76,9 @@ class Auth extends MY_Controller
         $roleId   = $this->input->get('id','');
         $findRole = $this->AuthModel->findRole($roleId);
         $rule     = $this->AuthModel->toGetAuth(1);
+        $city     = $this->MemberModel->getCity();
+        // D($city);
+        $this->ci_smarty->assign('city', $city);
         $this->ci_smarty->assign('role',$findRole);
         $this->ci_smarty->assign('rid',explode(',', $findRole['rule_id']));
         $this->ci_smarty->assign('rule', $rule);

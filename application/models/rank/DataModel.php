@@ -284,7 +284,7 @@ class DataModel extends MY_Model
         if (!empty($condition1['secOwer'])) {
             $c['uid'] = $condition1['secOwer'];
         }
-        $users = $this->db->select('uid,name')->get_where('md_user',$c)->result_array();
+        $users = $this->db->select('uid,name,city')->get_where('md_user',$c)->result_array();
         // 今日预约
         $today = $this->getMemberCount([
             'a.isShow'     => 1,

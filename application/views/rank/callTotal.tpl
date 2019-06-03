@@ -32,6 +32,7 @@
             <tr>
                 <th>日期</th>
                 <th>姓名</th>
+                <th>城市</th>
                 <th>总量</th>
                 <th>今日预约</th>
                 <th>尚未处理</th>
@@ -45,6 +46,7 @@
                     <tr>
                         <td>{{$v['collectDate']}}</td>
                         <td>{{$v['name']}}</td>
+                        <td>{{$v['city']}}</td>
                         <td>{{$v['monthAllotCustom']}}</td>
                         <td>{{$v['today']}}</td>
                         <td>{{$v['old']}}</td>

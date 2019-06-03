@@ -18,6 +18,18 @@
                 <td>{{$data['B']}}</td>
                 <td>{{$data['C']}}</td>
             </tr>
+            <tr>
+                <td>我能分配数据</td>
+                <td>{{$limit['limit_num_a']}}</td>
+                <td>{{$limit['limit_num_b']}}</td>
+                <td>{{$limit['limit_num_c']}}</td>
+            </tr>
+            <tr style="color:red">
+                <td>还能分配数据</td>
+                <td>{{$limit['limit_num_a'] - $limit['send_num_a']}}</td>
+                <td>{{$limit['limit_num_b'] - $limit['send_num_b']}}</td>
+                <td>{{$limit['limit_num_c'] - $limit['send_num_c']}}</td>
+            </tr>
         </table>
     </fieldset>
     <form action="/fun/fun/startAllot" method='post' id="pagerForm" class="allotForm" data-toggle="ajaxform">

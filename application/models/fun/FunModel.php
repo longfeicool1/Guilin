@@ -37,17 +37,25 @@ class FunModel extends MY_Model
         // print_r(array_merge($default,$mrs));die;
     }
 
-    public function getSalesman()
+    public function getSalesman($position = 3)
     {
-        $sql = "SELECT
+        if ($position == 3) {
+            $sql = "SELECT
             a.uid,
             a.name,
             a.position
-            -- b.name AS parentName
             FROM md_user a
-            -- JOIN md_user b ON a.parent_id = b.uid
-            WHERE FIND_IN_SET(?,a.path) AND a.position >= 3 AND a.is_show = 1
+            WHERE FIND_IN_SET(?,a.path) AND a.position >= {$position} AND a.is_show = 1
             ORDER BY concat(path, ',', uid)";
+        } else {
+            $sql = "SELECT
+            a.uid,
+            a.name,
+            a.position
+            FROM md_user a
+            WHERE FIND_IN_SET(?,a.path) AND a.position >= {$position} AND a.is_show = 1
+            ORDER BY position";
+        }
         $result = $this->db->query($sql,[$this->userinfo['uid']])->result_array();
         // $return = [];
         foreach ($result as $k => $v) {
@@ -56,6 +64,9 @@ class FunModel extends MY_Model
             }
             if ($v['position'] == 4) {
                 $result[$k]['positionName'] = '团';
+            }
+            if ($v['position'] == 2) {
+                $result[$k]['positionName'] = '城';
             }
         }
         return $result;
@@ -89,6 +100,11 @@ class FunModel extends MY_Model
                 $Cuser[$k] = $v['C'];
             }
         }
+        // 判断当前登录用户是否超出分配限制
+        $res = $this->checkLimit(array_sum($Auser), array_sum($Buser), array_sum($Cuser));
+        if (!empty($res['errcode'])) {
+            return $res;
+        }
         // D($Auser);
         //从数据库里取出相应的数据
         $errmsg    = '';
@@ -99,17 +115,18 @@ class FunModel extends MY_Model
         $allReturn = $this->mergeArray($returnA[0],$allReturn);
         $lastUsers = $this->mergeArray($returnA[1],$lastUsers);
 
-        $peopleB = $this->getPeople('B',array_sum($Buser));
-        $returnB = $this->givePeople('B',$Buser,$peopleB);
+        $peopleB   = $this->getPeople('B',array_sum($Buser));
+        $returnB   = $this->givePeople('B',$Buser,$peopleB);
         $allReturn = $this->mergeArray($returnB[0],$allReturn);
         $lastUsers = $this->mergeArray($returnB[1],$lastUsers);
 
-        $peopleC = $this->getPeople('C',array_sum($Cuser));
-        $returnC = $this->givePeople('C',$Cuser,$peopleC);
+        $peopleC   = $this->getPeople('C',array_sum($Cuser));
+        $returnC   = $this->givePeople('C',$Cuser,$peopleC);
         $allReturn = $this->mergeArray($returnC[0],$allReturn);
         $lastUsers = $this->mergeArray($returnC[1],$lastUsers);
-        // D($lastUsers);
-
+        // D($peopleC);
+        $this->toUpdateLimit(count($peopleA), count($peopleB), count($peopleC));
+        // die;
         foreach ($allReturn as $uid => $customIds) {
             $this->db->where_in('id',$customIds)->update('md_custom_list',['firstOwer' => $uid,'secOwer' => $uid,'give_time' => date('Y-m-d H:i:s')]);
         }
@@ -119,7 +136,7 @@ class FunModel extends MY_Model
         if (!$uids) {
             return ['errcode' => 201,'errmsg'=> '已足额分配成功'];
         }
-        $user = $this->db->select('name,uid')->where_in('uid',$uids)->get('md_user')->result_array();
+        $user  = $this->db->select('name,uid')->where_in('uid',$uids)->get('md_user')->result_array();
         $nuser = [];
         foreach ($user as $v) {
             $nuser[$v['uid']] = $v['name'];
@@ -129,6 +146,28 @@ class FunModel extends MY_Model
         }
         return ['errcode' => 200,'errmsg'=> '分配成功','result' => $lastUsers,'source' => $rules];
         // D($allReturn);
+    }
+
+    /**
+     * [checkLimit 判断当前用户是否触发分配限制]
+     * @param  [type] $sumA [description]
+     * @param  [type] $sumB [description]
+     * @param  [type] $sumC [description]
+     * @return [type]       [description]
+     */
+    public function checkLimit($sumA = 0, $sumB = 0, $sumC = 0)
+    {
+        $limit = $this->getMyLimit();
+        if ($limit['limit_num_a'] < ($sumA+$limit['send_num_a'])) {
+            return ['errcode' => 300, 'errmsg' => '你分配的A级数据超出了分配限制'];
+        }
+        if ($limit['limit_num_b'] < ($sumB+$limit['send_num_b'])) {
+            return ['errcode' => 300, 'errmsg' => '你分配的B级数据超出了分配限制'];
+        }
+        if ($limit['limit_num_c'] < ($sumC+$limit['send_num_c'])) {
+            return ['errcode' => 300, 'errmsg' => '你分配的C级数据超出了分配限制'];
+        }
+        return true;
     }
 
     /**
@@ -225,5 +264,60 @@ class FunModel extends MY_Model
             return ['errcode' => 200,'errmsg'=> '重分配成功'];
         }
         return ['errcode' => 300,'errmsg'=> '重分配失败'];
+    }
+
+    public function getLimitInfo()
+    {
+        return $this->db->get_where('md_tuan_config')->result_array();
+    }
+
+    public function toUpdateLimit($numa = 0, $numb = 0, $numc = 0)
+    {
+        $boolen = false;
+        if ($numa > 0) {
+            $this->db->set('send_num_a', 'send_num_a +'.$numa, FALSE);
+            $boolen = true;
+        }
+        if ($numb > 0) {
+            $this->db->set('send_num_b', 'send_num_b +'.$numb, FALSE);
+            $boolen = true;
+        }
+        if ($numc > 0) {
+            $this->db->set('send_num_c', 'send_num_c +'.$numc, FALSE);
+            $boolen = true;
+        }
+        if ($boolen) {
+            $this->db->where('uid', $this->userinfo['uid']);
+            $this->db->update('md_tuan_config');
+        }
+        return true;
+    }
+
+    public function toSetLimit($data)
+    {
+        foreach ($data as $uid => $v) {
+            if ($v['exist'] == 1) {
+                $this->db->set('limit_num_a', $v['A']);
+                $this->db->set('limit_num_b', $v['B']);
+                $this->db->set('limit_num_c', $v['C']);
+                $this->db->where('uid', $uid);
+                $this->db->update('md_tuan_config');
+            } else {
+                unset($v['exist']);
+                $this->db->insert('md_tuan_config', [
+                    'uid'         => $uid,
+                    'limit_num_a' => $v['A'],
+                    'limit_num_b' => $v['B'],
+                    'limit_num_c' => $v['C'],
+                ]);
+            }
+        }
+        return ['errcode' => 200,'errmsg'=> '重分配成功'];
+    }
+
+    public function getMyLimit()
+    {
+        $uid = $this->userinfo['uid'];
+        return $this->db->get_where('md_tuan_config',['uid' => $uid])->row_array();
     }
 }

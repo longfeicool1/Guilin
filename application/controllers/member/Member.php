@@ -75,16 +75,18 @@ class Member extends MY_Controller
         if (!empty($data['ect'])) {
             $condition['a.updated <='] = $data['ect'] . ' 23:59:59';
         }
-        if (!empty($data['content'])) {
-            $condition['CONCAT(a.name,a.mobile,a.city,a.source) like'] = "%{$data['content']}%";
+        if (!empty($data['comment'])) {
+            $condition['comment'] = $data['comment'];
         }
-        // print_r($condition);die;
+        if (!empty($data['content'])) {
+            $condition['CONCAT(a.name,a.mobile,a.city,a.source,a.lastComment) like'] = "%{$data['content']}%";
+        }
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
         $list  = $this->MemberModel->getMemberList($page,$size,$condition,$whereOr);
-
-        $count = $this->MemberModel->getMemberCount($condition,$whereOr);
         // print_r($this->db->last_query());die;
+        $count = $this->MemberModel->getMemberCount($condition,$whereOr);
+
         $users = $this->MemberModel->getUser();
         $new   = $this->MemberModel->getMemberCount([
             'a.isShow'        => 1,
@@ -252,6 +254,12 @@ class Member extends MY_Controller
         }
         if (!empty($data['ids'])) {
             $whereIn = ['a.id' => explode(',',trim($data['ids'],','))];
+        }
+        if (!empty($data['comment'])) {
+            $condition['comment'] = $data['comment'];
+        }
+        if (!empty($data['content'])) {
+            $condition['CONCAT(a.name,a.mobile,a.city,a.source,a.lastComment) like'] = "%{$data['content']}%";
         }
         $list = $this->MemberModel->getMemberList(1,5000,$condition,$whereIn);
         // D($listt);
@@ -502,7 +510,7 @@ class Member extends MY_Controller
         } else {
             $data = $this->session->userdata('orderList');
         }
-        // D($data);
+        // D($this->userinfo);
         // echo '<pre>';print_r($this->userinfo);die;
         $condition = [];
         if (!empty($data['status'])) {
@@ -531,8 +539,14 @@ class Member extends MY_Controller
         }
         $page  = !empty($data['pageCurrent']) ? $data['pageCurrent'] : 1;
         $size  = !empty($data['pageSize']) ? $data['pageSize'] : 30;
-        $list  = $this->MemberModel->getOrderList($page,$size,$condition);
-        $count = $this->MemberModel->getOrderCount($condition);
+        //财务角色
+        if (!empty($this->userinfo['is_finance']) && $this->userinfo['is_finance'] == 2) {
+            $list  = $this->MemberModel->getFinanceOrderList($page,$size,$condition);
+            $count = $this->MemberModel->getFinanceOrderCount($condition);
+        } else {
+            $list  = $this->MemberModel->getOrderList($page,$size,$condition);
+            $count = $this->MemberModel->getOrderCount($condition);
+        }
         $users = $this->MemberModel->getUser();
         $this->ci_smarty->assign('users',$users);
         // D($list);die;
@@ -556,8 +570,8 @@ class Member extends MY_Controller
         $id   = $this->input->get('id');
         $info = $this->MemberModel->getOrderInfo($id);
         // D($this->userinfo);
-        $users = $this->MemberModel->getUser();
-        $this->ci_smarty->assign('users',$users);
+        // $users = $this->MemberModel->getUser();
+        // $this->ci_smarty->assign('users',$users);
         $this->ci_smarty->assign('data', $info);
         $this->ci_smarty->display('member/editOrder.tpl');
     }
@@ -566,6 +580,11 @@ class Member extends MY_Controller
     {
         $id     = $this->input->get('id');
         $data   = $this->input->post();
+        if (!empty($data['tag'])) {
+            $data['uid']      = $data['tag'];
+        }
+        unset($data['tag']);
+        // D($data);
         $result = $this->MemberModel->updateOrder($id,$data);
 
         if ($result['errcode'] == 200) {
@@ -612,7 +631,11 @@ class Member extends MY_Controller
         if (!empty($data['content'])) {
             $condition['CONCAT(a.username,a.mobile,b.city) like'] = "%{$data['content']}%";
         }
-        $list  = $this->MemberModel->getOrderList(1,5000,$condition);
+        if (!empty($this->userinfo['is_finance']) && $this->userinfo['is_finance'] == 2) {
+            $list  = $this->MemberModel->getFinanceOrderList(1,5000,$condition);
+        } else {
+            $list  = $this->MemberModel->getOrderList(1,5000,$condition);
+        }
         // echo '<pre>';print_r($list);die;
         if (empty($list)) {
             echo '未查到符合条件的数据';return;
